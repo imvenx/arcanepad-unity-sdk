@@ -22,7 +22,6 @@ public class ArcaneLibraryUse : MonoBehaviour
             Debug.Log("Client initialized!");
             wsService.Emit(new AttackEvent(new string[] { "some-id" }));
         };
-
     }
 
     void Update()
