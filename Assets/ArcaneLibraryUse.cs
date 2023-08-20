@@ -14,14 +14,26 @@ public class ArcaneLibraryUse : MonoBehaviour
         wsService.OnConnected += () =>
         {
             Debug.Log("Client connected!");
-            wsService.Emit(new AttackEvent(new string[] { "some-id" }));
+            var atkMsg = new AttackEvent(new string[] { MessageDestinataries.views }, 6);
+            wsService.Emit(atkMsg);
         };
 
         wsService.OnInitialized += () =>
         {
             Debug.Log("Client initialized!");
-            wsService.Emit(new AttackEvent(new string[] { "some-id" }));
+            wsService.Emit(new AttackEvent(new string[] { MessageDestinataries.pads }, 11));
         };
+
+        // wsService.On(CustomEventNames.Attack, OnAttacked);
+        wsService.On(CustomEventNames.Attack, (AttackEvent attackEvent) =>
+        {
+            Debug.Log($"Received Attack event: {JsonUtility.ToJson(attackEvent).ToString()}");
+        });
+
+        // wsService.On(CustomEventNames.Other, (AttackEvent a, string b) =>
+        // {
+        //     Debug.Log("other");
+        // });
     }
 
     void Update()
@@ -31,4 +43,9 @@ public class ArcaneLibraryUse : MonoBehaviour
             wsService.ws.DispatchMessageQueue();
         }
     }
+
+    // private void OnAttacked(AttackEvent attackData)
+    // {
+    //     Debug.Log($"Received Attack event: {JsonUtility.ToJson(attackData).ToString()}");
+    // }
 }

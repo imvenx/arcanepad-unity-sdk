@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using NativeWebSocket;
 using System.Threading.Tasks;
-
+using System.Reflection;
 
 public interface IWebSocketService { }
 
 public class WebSocketService<T> : IWebSocketService
 {
-    public delegate void EventCallback(EventFrom<T> data);
+    public delegate void EventCallback<U>(U data);
 
     public WebSocket ws;
-    private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
+    private Dictionary<string, List<Delegate>> eventHandlers = new Dictionary<string, List<Delegate>>();
     private string url;
     private const int reconnectionDelayMilliseconds = 1000;
     private string deviceType;
@@ -70,18 +70,30 @@ public class WebSocketService<T> : IWebSocketService
 
     private void OnMessage(byte[] message)
     {
-        Debug.Log("OnMessage!!!");
         string decodedMessage = System.Text.Encoding.UTF8.GetString(message);
-        EventFrom<T> parsedEvent = JsonUtility.FromJson<EventFrom<T>>(decodedMessage);
+        T eventName = JsonUtility.FromJson<BaseEvent<T>>(decodedMessage).name; // Assuming event always has a name
 
-        if (eventHandlers.TryGetValue(parsedEvent.name.ToString(), out List<EventCallback> handlers))
+        if (eventHandlers.TryGetValue(eventName.ToString(), out List<Delegate> callbacks))
         {
-            foreach (var handler in handlers)
+            foreach (var callback in callbacks)
             {
-                handler(parsedEvent);
+                // Try to invoke the callback with the decoded message
+                try
+                {
+                    Type callbackType = callback.GetType();
+                    MethodInfo invokeMethod = callbackType.GetMethod("Invoke");
+                    Type eventType = invokeMethod.GetParameters()[0].ParameterType;
+                    object eventObj = JsonUtility.FromJson(decodedMessage, eventType);
+                    callback.DynamicInvoke(eventObj);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error processing event: {ex.Message}");
+                }
             }
         }
     }
+
 
     private void OnInit(byte[] messageData)
     {
@@ -106,33 +118,44 @@ public class WebSocketService<T> : IWebSocketService
 
         // PlayerPrefs.SetString("ws-id", initMsg.assignedClientId);
 
+        ws.OnMessage -= OnInit;
         ws.OnMessage += OnMessage;
         OnInitialized?.Invoke();
     }
 
-    public void Emit(EventTo<T> e)
+    public void Emit(EventFromTo<T> e)
     {
+
         string message = JsonUtility.ToJson(e);
+        Debug.Log("toooo:!" + message);
         if (ws.State == WebSocketState.Open)
         {
             ws.SendText(message);
         }
+
+        Debug.Log("sent mesage: " + message);
     }
 
-    public void On(string eventName, EventCallback callback)
+    public void On<U>(string eventName, EventCallback<U> callback)
     {
         if (!eventHandlers.ContainsKey(eventName))
         {
-            eventHandlers[eventName] = new List<EventCallback>();
+            eventHandlers[eventName] = new List<Delegate>();
         }
         eventHandlers[eventName].Add(callback);
     }
 
-    public void Off(string eventName, EventCallback callback)
+    public void Off<U>(string eventName, EventCallback<U> callback)
     {
         if (eventHandlers.ContainsKey(eventName))
         {
-            eventHandlers[eventName].Remove(callback);
+            var callbackList = eventHandlers[eventName];
+            callbackList.RemoveAll(del => del == (Delegate)callback);
+
+            if (callbackList.Count == 0)
+            {
+                eventHandlers.Remove(eventName);
+            }
         }
     }
 
@@ -154,11 +177,11 @@ public class BaseEvent<T>
 
 public class EventTo<T> : BaseEvent<T>
 {
-    public string[] To { get; set; }
+    public string[] to;
 
     public EventTo(T name, string[] to) : base(name)
     {
-        To = to;
+        this.to = to;
     }
 }
 
@@ -166,9 +189,10 @@ public class EventFrom<T> : BaseEvent<T>
 {
     public string from;
 
-    public EventFrom(T name, string from) : base(name)
+    // public EventFrom(T name, string from) : base(name)
+    public EventFrom(T name) : base(name)
     {
-        this.from = from;
+        // this.from = from;
     }
 }
 
@@ -176,7 +200,8 @@ public class EventFromTo<T> : EventFrom<T>
 {
     public string[] to;
 
-    public EventFromTo(T name, string[] to, string from) : base(name, from)
+    // public EventFromTo(T name, string[] to, string from) : base(name, from)
+    public EventFromTo(T name, string[] to) : base(name)
     {
         this.to = to;
     }
@@ -196,7 +221,7 @@ public class AssignDataInitEvent : BaseEvent<string>
 
 public class EventName
 {
-    public static string AssignDataInit = "AssignDataInit";
+    public static readonly string AssignDataInit = "AssignDataInit";
 }
 
 // public enum EventName
@@ -226,8 +251,8 @@ public class EventName
 
 public class ArcaneClientType
 {
-    public static string web = "web";
-    public static string iframe = "iframe";
+    public static readonly string web = "web";
+    public static readonly string iframe = "iframe";
 }
 
 // public enum ArcaneDeviceType
@@ -271,10 +296,10 @@ public class AssignedDataInitEvent
     public string assignedDeviceId;
 }
 
-public interface InitIframeQueryParams
-{
-    string deviceId { get; }
-}
+// public interface InitIframeQueryParams
+// {
+//     string deviceId { get; }
+// }
 
 // public class MessageDestinataries
 // {
@@ -283,12 +308,30 @@ public interface InitIframeQueryParams
 //     public string pads;
 // }
 
-public class AttackEvent : EventTo<string>
+public class MessageDestinataries
 {
-    public AttackEvent(string[] to) : base(CustomEventNames.attack, to)
+    public static readonly string views = "views";
+    public static readonly string pads = "pads";
+}
+
+public class AttackEvent : EventFromTo<string>
+{
+    public int damage;
+    public AttackEvent(string[] to, int damage) : base(CustomEventNames.Attack, to)
     {
+        this.damage = damage;
     }
 }
+
+// public class AttackFromEvent : EventFrom<string>
+// {
+//     public int damage;
+//     public AttackFromEvent(string from, int damage) : base(CustomEventNames.Attack, from)
+//     {
+//         this.damage = damage;
+//     }
+// }
+
 
 // public enum CustomEventNames
 // {
@@ -297,5 +340,6 @@ public class AttackEvent : EventTo<string>
 
 public class CustomEventNames
 {
-    public static string attack = "attack";
+    public static readonly string Attack = "Attack";
+    public static readonly string Other = "Other";
 }
