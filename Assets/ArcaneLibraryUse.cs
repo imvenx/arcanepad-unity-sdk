@@ -9,7 +9,10 @@ public class ArcaneLibraryUse : MonoBehaviour
 
     void Start()
     {
-        var url = "ws://localhost:3009";
+        string url = "wss://localhost:3005";
+#if DEBUG || UNITY_EDITOR
+        url = "ws://localhost:3009";
+#endif
         wsService = new WebSocketService<string>(url, ArcaneDeviceType.view);
 
         wsService.OnConnected += () =>
@@ -33,9 +36,11 @@ public class ArcaneLibraryUse : MonoBehaviour
 
     void Update()
     {
+#if UNITY_EDITOR
         if (wsService != null)
         {
             wsService.ws.DispatchMessageQueue();
         }
+#endif
     }
 }

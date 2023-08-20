@@ -1,3 +1,6 @@
+*.log
+*.dwlt
+
 # Unity generated folders
 [Tt]emp/
 [Oo]bj/
@@ -34,3 +37,6 @@ ExportedObj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+Logs/shadercompiler-UnityShaderCompiler.exe0.log
+Logs/shadercompiler-UnityShaderCompiler.exe0.log
+UserSettings/Layouts/default-2022.dwlt
