@@ -111,6 +111,8 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         ws.OnMessage -= OnInit;
         ws.OnMessage += OnMessage;
         OnInitialized?.Invoke();
+
+        this.Emit(new OtherClientConnectedEvent(clientId), "all");
     }
 
     public void Emit(BaseEvent e, string[] to)
@@ -123,6 +125,17 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
             ws.SendText(eventToStr);
         }
     }
+    public void Emit(BaseEvent e, string to)
+    {
+        var eventTo = new EventTo(e, to);
+        string eventToStr = JsonConvert.SerializeObject(eventTo);
+
+        if (ws.State == WebSocketState.Open)
+        {
+            ws.SendText(eventToStr);
+        }
+    }
+
 
     public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : BaseEvent
     {
@@ -166,8 +179,14 @@ public class BaseEvent
 public class EventTo
 {
     public BaseEvent e;
-    public string[] to;
+    public object to;
     public EventTo(BaseEvent e, string[] to)
+    {
+        this.e = e;
+        this.to = to;
+    }
+
+    public EventTo(BaseEvent e, string to)
     {
         this.e = e;
         this.to = to;
@@ -219,6 +238,9 @@ public class MessageDestinataries
 {
     public static string views = "views";
     public static string pads = "pads";
+    public static string all = "all";
+    public static string self = "self";
+    public static string server = "server";
 }
 
 public class ArcaneDeviceEvent
@@ -254,13 +276,18 @@ public class AttackEvent : BaseEvent
     }
 }
 
-public class CustomEvent : BaseEvent
+public class OtherClientConnectedEvent : BaseEvent
 {
-    public string asd;
-    public CustomEvent(string damage) : base(CustomEventNames.Attack)
+    public string clientId;
+    public OtherClientConnectedEvent(string clientId) : base(ArcaneEventsNames.OtherClientConnected)
     {
-        this.asd = damage;
+        this.clientId = clientId;
     }
+}
+
+public class ArcaneEventsNames
+{
+    public static string OtherClientConnected = "OtherClientConnected";
 }
 
 public class CustomEventNames
