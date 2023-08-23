@@ -4,13 +4,12 @@ using UnityEngine;
 using NativeWebSocket;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
-public interface IWebSocketService { }
+using ArcanepadSDK.Models;
 
 public class WebSocketService<CustomEventNameType> : IWebSocketService
 {
     public delegate void EventCallback(Dictionary<string, object> data, string from);
-    public delegate void GenericEventCallback<T>(T eventData, string from) where T : BaseEvent;
+    public delegate void GenericEventCallback<T>(T eventData, string from) where T : ArcaneBaseEvent;
 
     public WebSocket ws;
     private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
@@ -27,7 +26,6 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     {
         this.url = url;
         this.deviceType = deviceType;
-        // this.deviceType = deviceType == ArcaneDeviceType.View ? "view" : deviceType == ArcaneDeviceType.Pad ? "pad" : "none";
         InitWebSocket();
     }
 
@@ -48,7 +46,25 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         ws.OnOpen += OnOpen;
         ws.OnError += OnError;
         ws.OnClose += OnClose;
-        ws.OnMessage += OnInit;
+        ws.OnMessage += OnMessage;
+        // ws.OnMessage += OnInit;
+
+        On(AEventName.Initialize, (InitializeEvent e, string from) =>
+        {
+            if (string.IsNullOrEmpty(e.assignedClientId))
+            {
+                Debug.LogError("Missing clientId on initialize");
+                return;
+            }
+            if (string.IsNullOrEmpty(e.assignedDeviceId))
+            {
+                Debug.LogError("Missing deviceOd on initialize");
+                return;
+            }
+            clientId = e.assignedClientId;
+            deviceId = e.assignedDeviceId;
+            Debug.Log("Client initialized with clientId: " + clientId + " and deviceId: " + deviceId);
+        });
 
         await ws.Connect();
     }
@@ -67,14 +83,19 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     private async void OnClose(WebSocketCloseCode closeCode)
     {
         Debug.Log($"WebSocket connection closed with code: {closeCode}");
+        await Task.CompletedTask;
+
+#if !UNITY_EDITOR
         await Task.Delay(reconnectionDelayMilliseconds);
+        Debug.Log($"Trying to reconnect...");
         await ws.Connect();
+#endif
     }
 
     private void OnMessage(byte[] message)
     {
         string decodedMessage = System.Text.Encoding.UTF8.GetString(message);
-        EventFrom parsedEvent = JsonConvert.DeserializeObject<EventFrom>(decodedMessage);
+        ArcaneMessageFrom parsedEvent = JsonConvert.DeserializeObject<ArcaneMessageFrom>(decodedMessage);
 
         if (eventHandlers.TryGetValue(parsedEvent.e["name"].ToString(), out List<EventCallback> handlers))
         {
@@ -85,39 +106,9 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         }
     }
 
-    private void OnInit(byte[] messageData)
+    public void Emit(ArcaneBaseEvent e, string[] to)
     {
-        string decodedMessage = System.Text.Encoding.UTF8.GetString(messageData);
-        AssignDataInitEvent initMsg = JsonConvert.DeserializeObject<AssignDataInitEvent>(decodedMessage);
-
-        if (initMsg.name != EventName.AssignDataInit)
-        {
-            Debug.LogWarning($"Received unexpected event before init: {decodedMessage}. Ignoring.");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(initMsg.assignedClientId) || string.IsNullOrEmpty(initMsg.assignedDeviceId))
-        {
-            Debug.LogWarning($"Missing client id or device id on init: {decodedMessage}.");
-            return;
-        }
-
-        Debug.Log($"Assigned ID: {initMsg.assignedClientId}");
-        clientId = initMsg.assignedClientId;
-        deviceId = initMsg.assignedDeviceId;
-
-        // PlayerPrefs.SetString("ws-id", initMsg.assignedClientId);
-
-        ws.OnMessage -= OnInit;
-        ws.OnMessage += OnMessage;
-        OnInitialized?.Invoke();
-
-        this.Emit(new OtherClientConnectedEvent(clientId), "all");
-    }
-
-    public void Emit(BaseEvent e, string[] to)
-    {
-        var eventTo = new EventTo(e, to);
+        var eventTo = new ArcaneMessageTo(e, to);
         string eventToStr = JsonConvert.SerializeObject(eventTo);
 
         if (ws.State == WebSocketState.Open)
@@ -125,9 +116,9 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
             ws.SendText(eventToStr);
         }
     }
-    public void Emit(BaseEvent e, string to)
+    public void Emit(ArcaneBaseEvent e, string to)
     {
-        var eventTo = new EventTo(e, to);
+        var eventTo = new ArcaneMessageTo(e, to);
         string eventToStr = JsonConvert.SerializeObject(eventTo);
 
         if (ws.State == WebSocketState.Open)
@@ -136,20 +127,27 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         }
     }
 
-
-    public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : BaseEvent
+    public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
-        EventCallback eventCallback = (dataDict, from) =>
+        try
         {
-            CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));
-            callback(eventData, from);
-        };
+            EventCallback eventCallback = (dataDict, from) =>
+            {
+                CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));
+                callback(eventData, from);
+            };
 
-        if (!eventHandlers.ContainsKey(eventName))
-        {
-            eventHandlers[eventName] = new List<EventCallback>();
+            if (!eventHandlers.ContainsKey(eventName))
+            {
+                eventHandlers[eventName] = new List<EventCallback>();
+            }
+            eventHandlers[eventName].Add(eventCallback);
         }
-        eventHandlers[eventName].Add(eventCallback);
+        catch (Exception e)
+        {
+            Debug.LogError("Exception on wsService.On" + e);
+        }
+
     }
 
     public void Off(string eventName, EventCallback eventCallback)
@@ -164,133 +162,4 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     {
         await ws.Close();
     }
-}
-
-public class BaseEvent
-{
-    public string name;
-
-    public BaseEvent(string name)
-    {
-        this.name = name;
-    }
-}
-
-public class EventTo
-{
-    public BaseEvent e;
-    public object to;
-    public EventTo(BaseEvent e, string[] to)
-    {
-        this.e = e;
-        this.to = to;
-    }
-
-    public EventTo(BaseEvent e, string to)
-    {
-        this.e = e;
-        this.to = to;
-    }
-}
-
-public class EventFrom
-{
-    public Dictionary<string, object> e;
-    public string from;
-    public EventFrom(Dictionary<string, object> e, string from)
-    {
-        this.e = e;
-        this.from = from;
-    }
-}
-
-public class AssignDataInitEvent : BaseEvent
-{
-    public string assignedClientId;
-    public string assignedDeviceId;
-
-    public AssignDataInitEvent(string assignedClientId, string assignedDeviceId) : base(EventName.AssignDataInit)
-    {
-        this.assignedClientId = assignedClientId;
-        this.assignedDeviceId = assignedDeviceId;
-    }
-}
-
-public class EventName
-{
-    public static string AssignDataInit = "AssignDataInit";
-}
-
-public class ArcaneClientType
-{
-    public static string web = "web";
-    public static string iframe = "iframe";
-}
-
-public class ArcaneDeviceType
-{
-    public static readonly string pad = "pad";
-    public static readonly string view = "view";
-    public static readonly string none = "none";
-}
-
-public class MessageDestinataries
-{
-    public static string views = "views";
-    public static string pads = "pads";
-    public static string all = "all";
-    public static string self = "self";
-    public static string server = "server";
-}
-
-public class ArcaneDeviceEvent
-{
-    public string type; // vibrate, getRotationVector, endRotationVector
-}
-
-public class ArcaneClientInitData
-{
-    public string clientType;
-    public string deviceType;
-    public string deviceId;
-}
-
-public class AssignedDataInitEvent
-{
-    public string eventTag = "init";
-    public string assignedClientId;
-    public string assignedDeviceId;
-}
-
-public interface InitIframeQueryParams
-{
-    string deviceId { get; }
-}
-
-public class AttackEvent : BaseEvent
-{
-    public int damage;
-    public AttackEvent(int damage) : base(CustomEventNames.Attack)
-    {
-        this.damage = damage;
-    }
-}
-
-public class OtherClientConnectedEvent : BaseEvent
-{
-    public string clientId;
-    public OtherClientConnectedEvent(string clientId) : base(ArcaneEventsNames.OtherClientConnected)
-    {
-        this.clientId = clientId;
-    }
-}
-
-public class ArcaneEventsNames
-{
-    public static string OtherClientConnected = "OtherClientConnected";
-}
-
-public class CustomEventNames
-{
-    public static string Attack = "Attack";
 }
