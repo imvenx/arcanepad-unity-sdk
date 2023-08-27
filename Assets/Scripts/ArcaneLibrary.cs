@@ -19,8 +19,8 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     private string clientId;
     private string deviceId;
 
-    public event Action OnConnected;
-    public event Action OnInitialized;
+    // public event Action OnConnected;
+    // public event Action OnInitialized;
 
     public WebSocketService(string url, string deviceType)
     {
@@ -72,7 +72,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     private void OnOpen()
     {
         Debug.Log("WebSocket connection opened.");
-        OnConnected?.Invoke();
+        // OnConnected?.Invoke();
     }
 
     private void OnError(string errorMessage)
@@ -85,6 +85,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         Debug.Log($"WebSocket connection closed with code: {closeCode}");
         await Task.CompletedTask;
 
+        // if (closeCode == WebSocketCloseCode.Normal) return;
 #if !UNITY_EDITOR
         await Task.Delay(reconnectionDelayMilliseconds);
         Debug.Log($"Trying to reconnect...");
@@ -116,16 +117,16 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
             ws.SendText(eventToStr);
         }
     }
-    public void Emit(ArcaneBaseEvent e, string to)
-    {
-        var eventTo = new ArcaneMessageTo(e, to);
-        string eventToStr = JsonConvert.SerializeObject(eventTo);
+    // public void Emit(ArcaneBaseEvent e, string to)
+    // {
+    //     var eventTo = new ArcaneMessageTo(e, to);
+    //     string eventToStr = JsonConvert.SerializeObject(eventTo);
 
-        if (ws.State == WebSocketState.Open)
-        {
-            ws.SendText(eventToStr);
-        }
-    }
+    //     if (ws.State == WebSocketState.Open)
+    //     {
+    //         ws.SendText(eventToStr);
+    //     }
+    // }
 
     public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
@@ -156,10 +157,5 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         {
             eventHandlers[eventName].Remove(eventCallback);
         }
-    }
-
-    public async void Close()
-    {
-        await ws.Close();
     }
 }

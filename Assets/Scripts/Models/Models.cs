@@ -1,5 +1,7 @@
 
 using System.Collections.Generic;
+using ArcanepadSDK.Models;
+using UnityEngine;
 
 namespace ArcanepadSDK.Models
 {
@@ -80,10 +82,30 @@ namespace ArcanepadSDK.Models
 
     //#endregion 
 
+    public class ArcaneClient
+    {
+        public string id { get; set; }
+        public string clientType { get; set; }
+
+        public ArcaneClient(string id, string clientType)
+        {
+            this.id = id;
+            this.clientType = clientType;
+        }
+    }
+
     public class ArcaneClientType
     {
-        public static string web = "web";
+        public static string @internal = "internal";
         public static string iframe = "iframe";
+        public static string external = "external";
+    }
+
+    public class ArcaneDevice
+    {
+        public string id { get; set; }
+        public IList<ArcaneClient> clients { get; set; }
+        public string deviceType { get; set; }
     }
 
     public class ArcaneDeviceType
@@ -91,15 +113,6 @@ namespace ArcanepadSDK.Models
         public static readonly string pad = "pad";
         public static readonly string view = "view";
         public static readonly string none = "none";
-    }
-
-    public class MessageDestinataries
-    {
-        public static string views = "views";
-        public static string pads = "pads";
-        public static string all = "all";
-        public static string self = "self";
-        public static string server = "server";
     }
 
     public class ArcaneClientInitData
@@ -148,5 +161,23 @@ namespace ArcanepadSDK.Models
         public static string ClientConnect = "ClientConnect";
         public static string ClientDisconnect = "ClientDisconnect";
 
+    }
+}
+
+public class RefreshGlobalStateEvent : ArcaneBaseEvent
+{
+    public GlobalState refreshedGlobalState { get; set; }
+    public RefreshGlobalStateEvent(GlobalState refreshedGlobalState) : base(AEventName.RefreshGlobalState)
+    {
+        this.refreshedGlobalState = refreshedGlobalState;
+    }
+}
+
+public class GlobalState
+{
+    public IList<ArcaneDevice> devices { get; set; }
+    public GlobalState(IList<ArcaneDevice> devices)
+    {
+        this.devices = devices;
     }
 }
