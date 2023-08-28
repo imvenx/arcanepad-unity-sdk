@@ -80,12 +80,36 @@ namespace ArcanepadSDK.Models
         }
     }
 
+
+    public class StartGetRotationVectorEvent : ArcaneBaseEvent
+    {
+        public StartGetRotationVectorEvent() : base(AEventName.StartGetRotationVector) { }
+    }
+
+    public class StopGetRotationVectorEvent : ArcaneBaseEvent
+    {
+        public StopGetRotationVectorEvent() : base(AEventName.StopGetRotationVector) { }
+    }
+
+    public class GetRotationVectorEvent : ArcaneBaseEvent
+    {
+        public float x;
+        public float y;
+        public float z;
+        public GetRotationVectorEvent(float x, float y, float z) : base(AEventName.GetRotationVector)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
     //#endregion 
 
     public class ArcaneClient
     {
-        public string id { get; set; }
-        public string clientType { get; set; }
+        public string id;
+        public string clientType;
 
         public ArcaneClient(string id, string clientType)
         {
@@ -161,6 +185,9 @@ namespace ArcanepadSDK.Models
         public static string ClientConnect = "ClientConnect";
         public static string ClientDisconnect = "ClientDisconnect";
 
+        public static string StartGetRotationVector = "StartGetRotationVector";
+        public static string StopGetRotationVector = "StopGetRotationVector";
+        public static string GetRotationVector = "GetRotationVector";
     }
 }
 

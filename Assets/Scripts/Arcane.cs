@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ArcanepadSDK.CustomModels;
 using ArcanepadSDK.Models;
 using Newtonsoft.Json;
@@ -9,10 +10,10 @@ public class Arcane : MonoBehaviour
 {
     public static WebSocketService<string> msg;
     private IList<ArcaneDevice> devices;
-    private IList<string> internalViewsIds;
-    private IList<string> internalPadsIds;
-    public IList<string> userViewsIds;
-    public IList<string> userPadsIds;
+    private string[] internalViewsIds;
+    private string[] internalPadsIds;
+    public string[] userViewsIds;
+    public string[] userPadsIds;
 
     void Awake()
     {
@@ -38,16 +39,16 @@ public class Arcane : MonoBehaviour
             devices = e.refreshedGlobalState.devices;
 
             internalPadsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
-                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
+                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToArray();
 
             internalViewsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
-                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
+                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToArray();
 
             userPadsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
-                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
+                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToArray();
 
             userViewsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
-                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
+                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToArray();
 
         });
 
@@ -65,6 +66,33 @@ public class Arcane : MonoBehaviour
         // wsService.On(AEventName.ClientDisconnect, (ClientDisconnect e, string from) =>
         // {
         //     Debug.Log($"client disconnected with id: {e.clientId}");
+        // });
+    }
+
+    void Start()
+    {
+        // Mimic setInterval with an infinite loop and a delay
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                // Equivalent of Arcane.msg.emit(new StartGetRotationVectorEvent(), Arcane.internalPadsIds)
+                msg.Emit(new StartGetRotationVectorEvent(), internalPadsIds);
+
+                // Equivalent of setTimeout
+                await Task.Delay(2000);
+
+                // Equivalent of Arcane.msg.emit(new StopGetRotationVectorEvent(), Arcane.internalPadsIds)
+                msg.Emit(new StopGetRotationVectorEvent(), internalPadsIds);
+
+                // Wait for 2000ms before the next iteration (making it 4000ms total as in the original code)
+                await Task.Delay(2000);
+            }
+        });
+
+        // msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string from) =>
+        // {
+        //     Debug.Log(e.x + " | " + e.y + " | " + e.z);
         // });
     }
 
