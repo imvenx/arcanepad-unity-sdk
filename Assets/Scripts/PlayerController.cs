@@ -6,25 +6,32 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called before the first frame update
+
+    public IframePad PadData { get; private set; }
+
+    public void Initialize(IframePad pad)
+    {
+        this.PadData = pad;
+    }
+
     void Start()
     {
-        Arcane.msg.On(AEventName.Left, (LeftEvent e, string from) =>
+        Arcane.pad.On(AEventName.Left, PadData.ClientId, (LeftEvent e) =>
         {
             this.transform.Translate(Vector3.left);
             Debug.Log("moved to  the left");
         });
-        Arcane.msg.On(AEventName.Right, (RightEvent e, string from) =>
+        Arcane.pad.On(AEventName.Right, PadData.ClientId, (RightEvent e) =>
         {
             this.transform.Translate(Vector3.right);
             Debug.Log("moved to  the Right");
         });
-        Arcane.msg.On(AEventName.Up, (UpEvent e, string from) =>
+        Arcane.pad.On(AEventName.Up, PadData.ClientId, (UpEvent e) =>
         {
             this.transform.Translate(Vector3.up);
             Debug.Log("moved to  the Up");
         });
-        Arcane.msg.On(AEventName.Down, (DownEvent e, string from) =>
+        Arcane.pad.On(AEventName.Down, PadData.ClientId, (DownEvent e) =>
         {
             this.transform.Translate(Vector3.down);
             Debug.Log("moved to  the Down");

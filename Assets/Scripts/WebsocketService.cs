@@ -107,7 +107,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         }
     }
 
-    public void Emit(ArcaneBaseEvent e, string[] to)
+    public void Emit(ArcaneBaseEvent e, IList<string> to)
     {
         var eventTo = new ArcaneMessageTo(e, to);
         string eventToStr = JsonConvert.SerializeObject(eventTo);
@@ -127,6 +127,11 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     //         ws.SendText(eventToStr);
     //     }
     // }
+
+    public void On<CustomEventType>(string eventName, Action<CustomEventType> callback) where CustomEventType : ArcaneBaseEvent
+    {
+        On<CustomEventType>(eventName, (eventData, from) => callback(eventData));
+    }
 
     public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {

@@ -1,23 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ArcanepadSDK;
 using ArcanepadSDK.CustomModels;
 using ArcanepadSDK.Models;
-using Newtonsoft.Json;
 using UnityEngine;
 
 public class Arcane : MonoBehaviour
 {
     public static WebSocketService<string> msg;
-    private IList<ArcaneDevice> devices;
-    private string[] internalViewsIds;
-    private string[] internalPadsIds;
-    public string[] userViewsIds;
-    public string[] userPadsIds;
+    public static IList<ArcaneDevice> devices;
+    public static ArcanePad pad;
+    private static List<string> internalViewsIds = new List<string>();
+    private static List<string> internalPadsIds = new List<string>();
+    public static List<string> userViewsIds = new List<string>();
+    public static List<string> userPadsIds = new List<string>();
 
     void Awake()
     {
         devices = new List<ArcaneDevice>();
+        pad = new ArcanePad();
 
         string url = "wss://localhost:3005";
 
@@ -39,16 +41,16 @@ public class Arcane : MonoBehaviour
             devices = e.refreshedGlobalState.devices;
 
             internalPadsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
-                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToArray();
+                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
             internalViewsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
-                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToArray();
+                .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
             userPadsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
-                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToArray();
+                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
             userViewsIds = devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
-                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToArray();
+                .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
         });
 

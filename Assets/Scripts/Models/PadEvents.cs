@@ -10,42 +10,42 @@ namespace ArcanepadSDK.PadEvents
 
     public class LeftEvent : PadEvent
     {
-        LeftEvent() : base(AEventName.Left) { }
+        public LeftEvent() : base(AEventName.Left) { }
     }
 
     public class RightEvent : PadEvent
     {
-        RightEvent() : base(AEventName.Right) { }
+        public RightEvent() : base(AEventName.Right) { }
     }
 
     public class UpEvent : PadEvent
     {
-        UpEvent() : base(AEventName.Up) { }
+        public UpEvent() : base(AEventName.Up) { }
     }
 
     public class DownEvent : PadEvent
     {
-        DownEvent() : base(AEventName.Down) { }
+        public DownEvent() : base(AEventName.Down) { }
     }
 
     public class EnterEvent : PadEvent
     {
-        EnterEvent() : base(AEventName.Enter) { }
+        public EnterEvent() : base(AEventName.Enter) { }
     }
 
     public class InfoEvent : PadEvent
     {
-        InfoEvent() : base(AEventName.Info) { }
+        public InfoEvent() : base(AEventName.Info) { }
     }
 
     public class ExtraEvent : PadEvent
     {
-        ExtraEvent() : base(AEventName.Extra) { }
+        public ExtraEvent() : base(AEventName.Extra) { }
     }
 
     public class BackEvent : PadEvent
     {
-        BackEvent() : base(AEventName.Back) { }
+        public BackEvent() : base(AEventName.Back) { }
     }
 
 }
