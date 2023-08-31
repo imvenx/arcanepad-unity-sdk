@@ -49,7 +49,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         ws.OnMessage += OnMessage;
         // ws.OnMessage += OnInit;
 
-        On(AEventName.Initialize, (InitializeEvent e, string from) =>
+        On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) =>
         {
             if (string.IsNullOrEmpty(e.assignedClientId))
             {

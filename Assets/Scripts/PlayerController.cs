@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.PadEvents;
 using UnityEngine;
@@ -16,6 +17,12 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        // Arcane.pad.StartGetRotationVector(PadData.InternalId);
+        // Arcane.pad.OnGetRotationVector(PadData.InternalId, (e) =>
+        // {
+        //     transform.rotation = Quaternion.Euler(new Vector3(e.azimuth, e.pitch, e.roll));
+        // });
+
         Arcane.pad.On(AEventName.Left, PadData.ClientId, (LeftEvent e) =>
         {
             this.transform.Translate(Vector3.left);
@@ -36,11 +43,5 @@ public class PlayerController : MonoBehaviour
             this.transform.Translate(Vector3.down);
             Debug.Log("moved to  the Down");
         });
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // this.transform.Translate(Vector3.forward);
     }
 }

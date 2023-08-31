@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using ArcanepadSDK.Models;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public class PlayerManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-
     public List<IframePad> iframePads = new List<IframePad>();
 
-    void Start()
+    async void Start()
     {
+        await Arcane.ArcaneClientInitialized();
+
+        InitPlayersManager();
+    }
+
+    void InitPlayersManager()
+    {
+        Debug.Log(JsonConvert.SerializeObject(Arcane.userPadsIds));
+
         Arcane.userPadsIds.ForEach(iframePadId =>
         {
             var device = Arcane.devices.FirstOrDefault(d => d.clients.Any(c => c.id == iframePadId));
@@ -35,6 +45,8 @@ public class PlayerManager : MonoBehaviour
             CreatePlayer(newIframePad);
         });
 
+        iframePads.ForEach(iframePad => Debug.Log(iframePad.ClientId));
+
         Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
             var padAlreadyCreated = iframePads.Any(p => p.ClientId == e.IframeId);
@@ -46,7 +58,6 @@ public class PlayerManager : MonoBehaviour
             iframePads.Add(newIframePad);
 
         });
-
     }
 
     void CreatePlayer(IframePad pad)

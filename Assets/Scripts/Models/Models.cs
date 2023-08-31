@@ -47,14 +47,16 @@ namespace ArcanepadSDK.Models
 
     //#region  Events
 
-    public class InitializeEvent : ArcaneBaseEvent
+    public class ArcaneClientInitializeEvent : ArcaneBaseEvent
     {
         public string assignedClientId;
         public string assignedDeviceId;
-        public InitializeEvent(string assignedClientId, string assignedDeviceId) : base(AEventName.Initialize)
+        public GlobalState globalState;
+        public ArcaneClientInitializeEvent(string assignedClientId, string assignedDeviceId, GlobalState globalState) : base(AEventName.Initialize)
         {
             this.assignedClientId = assignedClientId;
             this.assignedDeviceId = assignedDeviceId;
+            this.globalState = globalState;
         }
     }
 
@@ -120,14 +122,14 @@ namespace ArcanepadSDK.Models
 
     public class GetRotationVectorEvent : ArcaneBaseEvent
     {
-        public float x;
-        public float y;
-        public float z;
-        public GetRotationVectorEvent(float x, float y, float z) : base(AEventName.GetRotationVector)
+        public float azimuth;
+        public float pitch;
+        public float roll;
+        public GetRotationVectorEvent(float azimuth, float pitch, float roll) : base(AEventName.GetRotationVector)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            this.azimuth = azimuth;
+            this.pitch = pitch;
+            this.roll = roll;
         }
     }
 

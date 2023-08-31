@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using NativeWebSocket;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using ArcanepadSDK.Models;
 
 namespace ArcanepadSDK
@@ -11,23 +7,25 @@ namespace ArcanepadSDK
     public class ArcanePad
     {
         private EventEmitter events = new EventEmitter();
+        private WebSocketService<string> msg;
 
-        public ArcanePad()
+        public ArcanePad(WebSocketService<string> _msg)
         {
-            // Arcane.msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string clientId) =>
-            // {
-            //     ProxyEvent(AEventName.GetRotationVector, e, clientId);
-            // });
+            msg = _msg;
+            msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string clientId) =>
+            {
+                ProxyEvent(AEventName.GetRotationVector, e, clientId);
+            });
 
-            // Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
-            // {
-            //     ProxyEvent(AEventName.IframePadConnect, e, e.IframeId);
-            // });
+            msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
+            {
+                ProxyEvent(AEventName.IframePadConnect, e, e.IframeId);
+            });
 
-            // Arcane.msg.On(AEventName.IframePadDisconnect, (IframePadConnectEvent e, string from) =>
-            // {
-            //     ProxyEvent(AEventName.IframePadDisconnect, e, e.IframeId);
-            // });
+            msg.On(AEventName.IframePadDisconnect, (IframePadConnectEvent e, string from) =>
+            {
+                ProxyEvent(AEventName.IframePadDisconnect, e, e.IframeId);
+            });
         }
 
         private void ProxyEvent(string eventName, ArcaneBaseEvent e, string padId)
@@ -38,12 +36,12 @@ namespace ArcanepadSDK
 
         public void StartGetRotationVector(string internalId)
         {
-            Arcane.msg.Emit(new StartGetRotationVectorEvent(), new string[] { internalId });
+            msg.Emit(new StartGetRotationVectorEvent(), new List<string> { internalId });
         }
 
         public void StopGetRotationVector(string internalId)
         {
-            Arcane.msg.Emit(new StopGetRotationVectorEvent(), new string[] { internalId });
+            msg.Emit(new StopGetRotationVectorEvent(), new List<string> { internalId });
             events.Off($"{AEventName.GetRotationVector}_{internalId}");
         }
 
@@ -75,10 +73,8 @@ namespace ArcanepadSDK
                 }
             };
 
-            Arcane.msg.On(eventName, proxyCallback);
+            msg.On(eventName, proxyCallback);
         }
-
-
 
         public void Off(string padId, string eventName, Action<ArcaneBaseEvent> callback = null)
         {
