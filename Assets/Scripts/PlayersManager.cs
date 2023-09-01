@@ -12,15 +12,15 @@ using System;
 public class PlayerManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-    public List<PlayerController> Players = new List<PlayerController>();
-    public bool GameStarted { get; private set; }
+    public List<PlayerController> players = new List<PlayerController>();
+    public bool gameStarted { get; private set; }
     async void Start()
     {
         var initalPads = await Arcane.ArcaneClientInitialized();
 
         initalPads.ForEach(pad =>
         {
-            CreatePlayer(pad);
+            createPlayer(pad);
         });
 
         // Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) => CreatePlayerIfNotExist(e.Pad));
@@ -28,47 +28,47 @@ public class PlayerManager : MonoBehaviour
         /////// ON IFRAME PAD CONNECT => CREATE PLAYER IF NO EXIST
         /////// ON IFRAME PAD DISCONNECT => REMOVE PLAYER   
 
-        Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
+        Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = Players.Any(p => p.Pad.IframeId == e.IframeId);
+            var playerExists = players.Any(p => p.pad.iframeId == e.IframeId);
             if (playerExists) return;
 
             var pad = new ArcanePad(deviceId: e.DeviceId, internalId: e.InternalClientId, iframeId: e.IframeId, isConnected: true);
 
-            CreatePlayer(pad);
+            createPlayer(pad);
         });
 
-        Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
+        Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = Players.Any(p => p.Pad.IframeId == e.IframeId);
+            var playerExists = players.Any(p => p.pad.iframeId == e.IframeId);
             if (playerExists) return;
 
             var pad = new ArcanePad(deviceId: e.DeviceId, internalId: e.InternalClientId, iframeId: e.IframeId, isConnected: true);
 
-            CreatePlayer(pad);
+            createPlayer(pad);
         });
 
-        Arcane.Msg.On(AEventName.IframePadDisconnect, (IframePadDisconnectEvent e) =>
+        Arcane.msg.On(AEventName.IframePadDisconnect, (IframePadDisconnectEvent e) =>
         {
-            var player = Players.FirstOrDefault(p => p.Pad.IframeId == e.IframeId);
+            var player = players.FirstOrDefault(p => p.pad.iframeId == e.IframeId);
 
-            DestroyPlayer(player);
+            destroyPlayer(player);
         });
 
     }
 
-    void CreatePlayer(ArcanePad pad)
+    void createPlayer(ArcanePad pad)
     {
         GameObject newPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
         PlayerController playerComponent = newPlayer.GetComponent<PlayerController>();
         playerComponent.Initialize(pad);
 
-        Players.Add(playerComponent);
+        players.Add(playerComponent);
     }
 
-    void DestroyPlayer(PlayerController playerComponent)
+    void destroyPlayer(PlayerController playerComponent)
     {
-        Players.Remove(playerComponent);
+        players.Remove(playerComponent);
         Destroy(playerComponent.gameObject);
     }
 

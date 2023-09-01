@@ -10,19 +10,19 @@ using UnityEngine;
 
 public class Arcane : MonoBehaviour
 {
-    public static WebSocketService<string> Msg;
-    public static IList<ArcaneDevice> Devices;
+    public static WebSocketService<string> msg;
+    public static IList<ArcaneDevice> devices;
     // public static List<ArcanePad> Pads = new List<ArcanePad>();
-    private static List<string> InternalViewsIds = new List<string>();
-    private static List<string> InternalPadsIds = new List<string>();
-    public static List<string> IframeViewsIds = new List<string>();
-    public static List<string> IframePadsIds = new List<string>();
-    private static TaskCompletionSource<List<ArcanePad>> _ArcaneClientInitialized = new TaskCompletionSource<List<ArcanePad>>();
+    private static List<string> internalViewsIds = new List<string>();
+    private static List<string> internalPadsIds = new List<string>();
+    public static List<string> iframeViewsIds = new List<string>();
+    public static List<string> iframePadsIds = new List<string>();
+    private static TaskCompletionSource<List<ArcanePad>> _arcaneClientInitialized = new TaskCompletionSource<List<ArcanePad>>();
     // private static TaskCompletionSource<ArcaneClientInitializeEvent> _ArcaneClientInitialized = new TaskCompletionSource<ArcaneClientInitializeEvent>();
 
     public static Task<List<ArcanePad>> ArcaneClientInitialized()
     {
-        return _ArcaneClientInitialized.Task;
+        return _arcaneClientInitialized.Task;
     }
 
     void Awake()
@@ -32,58 +32,40 @@ public class Arcane : MonoBehaviour
         url = "ws://localhost:3009";
 #endif
 
-        Devices = new List<ArcaneDevice>();
-        Msg = new WebSocketService<string>(url, ArcaneDeviceType.view);
+        devices = new List<ArcaneDevice>();
+        msg = new WebSocketService<string>(url, ArcaneDeviceType.view);
 
         Action<ArcaneClientInitializeEvent> myCallback = (ArcaneClientInitializeEvent e) => OnInitialize(e);
 
-        Msg.On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) => OnInitialize(e));
+        msg.On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) => OnInitialize(e));
 
-        //     Action unsubscribe = Msg.On<IframePadConnectEvent>(AEventName.IframePadConnect, (e, from) =>
-        //     {
-        //         Debug.Log("asdasd");
-        //     });
-
-        //     Action other = Msg.On<IframePadConnectEvent>(AEventName.IframePadConnect, (e, from) =>
-        //   {
-        //       Debug.Log("qweqwe");
-        //   });
-
-        //     await Task.Delay(5000);
-        //     Debug.Log("offf!");
-        //     unsubscribe();
-    }
-
-    void asd()
-    {
-        Debug.Log("asdasd");
     }
 
     void Update()
     {
 #if UNITY_EDITOR
-        if (Msg != null)
+        if (msg != null)
         {
-            Msg.ws.DispatchMessageQueue();
+            msg.ws.DispatchMessageQueue();
         }
 #endif
     }
 
     void OnDestroy()
     {
-        Msg.ws.Close();
+        msg.ws.Close();
     }
 
     void OnDisable()
     {
-        Msg.ws.Close();
+        msg.ws.Close();
     }
 
     void RefreshArcaneState(GlobalState globalState)
     {
-        Devices = globalState.devices;
+        devices = globalState.devices;
         // InitPads(Devices);
-        InitClientsIds(Devices);
+        InitClientsIds(devices);
     }
 
     private void OnInitialize(ArcaneClientInitializeEvent e)
@@ -92,7 +74,7 @@ public class Arcane : MonoBehaviour
 
         var pads = GetPads(e.globalState.devices);
 
-        _ArcaneClientInitialized.SetResult(pads);
+        _arcaneClientInitialized.SetResult(pads);
 
         Debug.Log("Client initialized");
     }
@@ -165,16 +147,16 @@ public class Arcane : MonoBehaviour
 
     void InitClientsIds(IList<ArcaneDevice> _devices)
     {
-        InternalPadsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
+        internalPadsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
             .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
-        InternalViewsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
+        internalViewsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
             .Where(client => client.clientType == ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
-        IframePadsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
+        iframePadsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad).SelectMany(device => device.clients
             .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
 
-        IframeViewsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
+        iframeViewsIds = _devices.Where(device => device.deviceType == ArcaneDeviceType.view).SelectMany(device => device.clients
             .Where(client => client.clientType != ArcaneClientType.@internal).Select(client => client.id)).ToList();
     }
 }

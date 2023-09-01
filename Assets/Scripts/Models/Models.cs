@@ -9,11 +9,11 @@ namespace ArcanepadSDK.Models
 
     public class ArcaneBaseEvent
     {
-        public string Name { get; }
+        public string name { get; }
 
         public ArcaneBaseEvent(string name)
         {
-            Name = name;
+            this.name = name;
         }
     }
 

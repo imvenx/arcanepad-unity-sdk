@@ -3,41 +3,50 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ArcanepadSDK;
+using ArcanepadSDK.CustomModels;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.PadEvents;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public ArcanePad Pad { get; private set; }
+    public ArcanePad pad { get; private set; }
 
     public void Initialize(ArcanePad pad)
     {
-        Pad = pad;
+        this.pad = pad;
     }
 
     void Start()
     {
-        Pad.On(AEventName.Left, (LeftEvent e) =>
+        pad.On(AEventName.Left, (LeftEvent e) =>
         {
             transform.Translate(Vector3.left);
         });
-        Pad.On(AEventName.Right, (RightEvent e) =>
+        pad.On(AEventName.Right, (RightEvent e) =>
         {
             transform.Translate(Vector3.right);
         });
-        Pad.On(AEventName.Up, (UpEvent e) =>
+        pad.On(AEventName.Up, (UpEvent e) =>
         {
             transform.Translate(Vector3.up);
         });
-        Pad.On(AEventName.Down, (DownEvent e) =>
+        pad.On(AEventName.Down, (DownEvent e) =>
         {
             transform.Translate(Vector3.down);
+        });
+
+        pad.Emit(new AttackEvent(99));
+
+        pad.StartGetRotationVector();
+        pad.OnGetRotationVector((GetRotationVectorEvent e) =>
+        {
+            transform.rotation = Quaternion.Euler(e.azimuth, e.pitch, e.roll);
         });
     }
 
     void OnDestroy()
     {
-        Pad.Off();
+        pad.Off();
     }
 }

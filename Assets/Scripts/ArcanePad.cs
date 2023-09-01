@@ -8,22 +8,21 @@ namespace ArcanepadSDK
 {
     public class ArcanePad
     {
-        public string IframeId { get; set; }
-        public string DeviceId { get; set; }
-        public string InternalId { get; set; }
-        public bool IsConnected { get; set; }
+        public string iframeId { get; set; }
+        public string deviceId { get; set; }
+        public string internalId { get; set; }
+        public bool isConnected { get; set; }
         private EventEmitter events = new EventEmitter();
         private WebSocketService<string> Msg;
 
-
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
         {
-            IframeId = iframeId;
-            DeviceId = deviceId;
-            InternalId = internalId;
-            IsConnected = isConnected;
+            this.iframeId = iframeId;
+            this.deviceId = deviceId;
+            this.internalId = internalId;
+            this.isConnected = isConnected;
 
-            Msg = Arcane.Msg;
+            Msg = Arcane.msg;
             Msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string clientId) =>
             {
                 ProxyEvent(AEventName.GetRotationVector, e, clientId);
@@ -48,18 +47,23 @@ namespace ArcanepadSDK
 
         public void StartGetRotationVector()
         {
-            Msg.Emit(new StartGetRotationVectorEvent(), new List<string> { InternalId });
+            Msg.Emit(new StartGetRotationVectorEvent(), new List<string> { internalId });
         }
 
         public void StopGetRotationVector()
         {
-            Msg.Emit(new StopGetRotationVectorEvent(), new List<string> { InternalId });
-            events.Off($"{AEventName.GetRotationVector}_{InternalId}");
+            Msg.Emit(new StopGetRotationVectorEvent(), new List<string> { internalId });
+            events.Off($"{AEventName.GetRotationVector}_{internalId}");
+        }
+
+        public void Emit(ArcaneBaseEvent e)
+        {
+            Msg.Emit(e, new List<string> { iframeId });
         }
 
         public void OnGetRotationVector(Action<GetRotationVectorEvent> callback)
         {
-            events.On($"{AEventName.GetRotationVector}_{InternalId}", callback);
+            events.On($"{AEventName.GetRotationVector}_{internalId}", callback);
         }
 
         public void OnConnect(string padId, Action<IframePadConnectEvent> callback)
@@ -74,12 +78,12 @@ namespace ArcanepadSDK
 
         public Action On<T>(string eventName, Action<T> callback) where T : ArcaneBaseEvent
         {
-            string fullEventName = $"{eventName}_{IframeId}";
+            string fullEventName = $"{eventName}_{iframeId}";
             events.On(fullEventName, callback);
 
             Action<T, string> proxyCallback = (T e, string from) =>
             {
-                if (from == IframeId)
+                if (from == iframeId)
                 {
                     events.Emit(fullEventName, e);
                 }
