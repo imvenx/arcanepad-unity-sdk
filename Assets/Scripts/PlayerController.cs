@@ -1,47 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using ArcanepadSDK;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.PadEvents;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public ArcanePad Pad { get; private set; }
 
-    public IframePad PadData { get; private set; }
-
-    public void Initialize(IframePad pad)
+    public void Initialize(ArcanePad pad)
     {
-        this.PadData = pad;
+        Pad = pad;
     }
 
     void Start()
     {
-        // Arcane.pad.StartGetRotationVector(PadData.InternalId);
-        // Arcane.pad.OnGetRotationVector(PadData.InternalId, (e) =>
-        // {
-        //     transform.rotation = Quaternion.Euler(new Vector3(e.azimuth, e.pitch, e.roll));
-        // });
+        Pad.On(AEventName.Left, (LeftEvent e) =>
+        {
+            transform.Translate(Vector3.left);
+        });
+        Pad.On(AEventName.Right, (RightEvent e) =>
+        {
+            transform.Translate(Vector3.right);
+        });
+        Pad.On(AEventName.Up, (UpEvent e) =>
+        {
+            transform.Translate(Vector3.up);
+        });
+        Pad.On(AEventName.Down, (DownEvent e) =>
+        {
+            transform.Translate(Vector3.down);
+        });
 
-        Arcane.pad.On(AEventName.Left, PadData.ClientId, (LeftEvent e) =>
-        {
-            this.transform.Translate(Vector3.left);
-            Debug.Log("moved to  the left");
-        });
-        Arcane.pad.On(AEventName.Right, PadData.ClientId, (RightEvent e) =>
-        {
-            this.transform.Translate(Vector3.right);
-            Debug.Log("moved to  the Right");
-        });
-        Arcane.pad.On(AEventName.Up, PadData.ClientId, (UpEvent e) =>
-        {
-            this.transform.Translate(Vector3.up);
-            Debug.Log("moved to  the Up");
-        });
-        Arcane.pad.On(AEventName.Down, PadData.ClientId, (DownEvent e) =>
-        {
-            this.transform.Translate(Vector3.down);
-            Debug.Log("moved to  the Down");
-        });
     }
 }

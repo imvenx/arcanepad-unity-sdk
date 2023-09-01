@@ -9,11 +9,11 @@ namespace ArcanepadSDK.Models
 
     public class ArcaneBaseEvent
     {
-        public string name;
+        public string Name { get; }
 
         public ArcaneBaseEvent(string name)
         {
-            this.name = name;
+            Name = name;
         }
     }
 
@@ -60,22 +60,22 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class ClientConnect : ArcaneBaseEvent
+    public class ClientConnectEvent : ArcaneBaseEvent
     {
         public string clientId;
         public string clientType;
-        public ClientConnect(string clientId, string clientType) : base(AEventName.ClientConnect)
+        public ClientConnectEvent(string clientId, string clientType) : base(AEventName.ClientConnect)
         {
             this.clientId = clientId;
             this.clientType = clientType;
         }
     }
 
-    public class ClientDisconnect : ArcaneBaseEvent
+    public class ClientDisconnectEvent : ArcaneBaseEvent
     {
         public string clientId;
         public ArcaneClientType clientType;
-        public ClientDisconnect(string clientId, ArcaneClientType clientType) : base(AEventName.ClientDisconnect)
+        public ClientDisconnectEvent(string clientId, ArcaneClientType clientType) : base(AEventName.ClientDisconnect)
         {
             this.clientId = clientId;
             this.clientType = clientType;
@@ -240,18 +240,18 @@ public class GlobalState
     }
 }
 
-public class IframePad
-{
-    public string ClientId { get; set; }
-    public string DeviceId { get; set; }
-    public string InternalId { get; set; }
-    public bool IsConnected { get; set; }
+// public class IframePad
+// {
+//     public string ClientId { get; set; }
+//     public string DeviceId { get; set; }
+//     public string InternalId { get; set; }
+//     public bool IsConnected { get; set; }
 
-    public IframePad(string clientId, string deviceId, string internalId, bool isConnected)
-    {
-        this.ClientId = clientId;
-        this.DeviceId = deviceId;
-        this.InternalId = internalId;
-        this.IsConnected = isConnected;
-    }
-}
+//     public IframePad(string clientId, string deviceId, string internalId, bool isConnected)
+//     {
+//         this.ClientId = clientId;
+//         this.DeviceId = deviceId;
+//         this.InternalId = internalId;
+//         this.IsConnected = isConnected;
+//     }
+// }

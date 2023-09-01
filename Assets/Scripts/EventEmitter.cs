@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using ArcanepadSDK.Models;
-using UnityEngine;
 
 namespace ArcanepadSDK
 {
@@ -10,7 +8,7 @@ namespace ArcanepadSDK
     {
         private Dictionary<string, Delegate> eventHandlers = new Dictionary<string, Delegate>();
 
-        public void On<T>(string name, Action<T> callback) where T : ArcaneBaseEvent
+        public Action On<T>(string name, Action<T> callback) where T : ArcaneBaseEvent
         {
             if (!eventHandlers.ContainsKey(name))
             {
@@ -20,6 +18,7 @@ namespace ArcanepadSDK
             {
                 eventHandlers[name] = Delegate.Combine(eventHandlers[name], callback);
             }
+            return () => Off(name, callback);
         }
 
         public void Off(string name, Delegate callback = null)
@@ -35,6 +34,7 @@ namespace ArcanepadSDK
                 eventHandlers[name] = Delegate.Remove(eventHandlers[name], callback);
             }
         }
+
         public void Emit<T>(string name, T e) where T : ArcanepadSDK.Models.ArcaneBaseEvent
         {
             if (eventHandlers.ContainsKey(name))

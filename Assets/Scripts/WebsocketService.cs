@@ -47,7 +47,6 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         ws.OnError += OnError;
         ws.OnClose += OnClose;
         ws.OnMessage += OnMessage;
-        // ws.OnMessage += OnInit;
 
         On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) =>
         {
@@ -72,7 +71,6 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     private void OnOpen()
     {
         Debug.Log("WebSocket connection opened.");
-        // OnConnected?.Invoke();
     }
 
     private void OnError(string errorMessage)
@@ -117,43 +115,22 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
             ws.SendText(eventToStr);
         }
     }
-    // public void Emit(ArcaneBaseEvent e, string to)
-    // {
-    //     var eventTo = new ArcaneMessageTo(e, to);
-    //     string eventToStr = JsonConvert.SerializeObject(eventTo);
 
-    //     if (ws.State == WebSocketState.Open)
-    //     {
-    //         ws.SendText(eventToStr);
-    //     }
-    // }
-
-    public void On<CustomEventType>(string eventName, Action<CustomEventType> callback) where CustomEventType : ArcaneBaseEvent
+    public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
-        On<CustomEventType>(eventName, (eventData, from) => callback(eventData));
-    }
-
-    public void On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
-    {
-        try
+        EventCallback eventCallback = (dataDict, from) =>
         {
-            EventCallback eventCallback = (dataDict, from) =>
-            {
-                CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));
-                callback(eventData, from);
-            };
+            CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));
+            callback(eventData, from);
+        };
 
-            if (!eventHandlers.ContainsKey(eventName))
-            {
-                eventHandlers[eventName] = new List<EventCallback>();
-            }
-            eventHandlers[eventName].Add(eventCallback);
-        }
-        catch (Exception e)
+        if (!eventHandlers.ContainsKey(eventName))
         {
-            Debug.LogError("Exception on wsService.On" + e);
+            eventHandlers[eventName] = new List<EventCallback>();
         }
+        eventHandlers[eventName].Add(eventCallback);
 
+        return () => Off(eventName, eventCallback);
     }
 
     public void Off(string eventName, EventCallback eventCallback)
