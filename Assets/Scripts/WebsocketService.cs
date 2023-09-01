@@ -98,11 +98,13 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
 
         if (eventHandlers.TryGetValue(parsedEvent.e["name"].ToString(), out List<EventCallback> handlers))
         {
-            foreach (var handler in handlers)
+            var handlersCopy = new List<EventCallback>(handlers);
+            foreach (var handler in handlersCopy)
             {
                 handler(parsedEvent.e, parsedEvent.from);
             }
         }
+
     }
 
     public void Emit(ArcaneBaseEvent e, IList<string> to)
@@ -115,6 +117,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
             ws.SendText(eventToStr);
         }
     }
+
 
     public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
@@ -131,6 +134,16 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         eventHandlers[eventName].Add(eventCallback);
 
         return () => Off(eventName, eventCallback);
+    }
+
+    public Action On<CustomEventType>(string eventName, Action<CustomEventType> callback) where CustomEventType : ArcaneBaseEvent
+    {
+        return On<CustomEventType>(eventName, (eventData, _) => callback(eventData));
+    }
+
+    public Action On(string eventName, Action callback)
+    {
+        return On<ArcaneBaseEvent>(eventName, (_, __) => callback());
     }
 
     public void Off(string eventName, EventCallback eventCallback)

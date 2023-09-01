@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ArcanepadSDK.Models;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace ArcanepadSDK
 {
@@ -14,14 +15,14 @@ namespace ArcanepadSDK
         private EventEmitter events = new EventEmitter();
         private WebSocketService<string> Msg;
 
+
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
         {
-            {
-                IframeId = iframeId;
-                DeviceId = deviceId;
-                InternalId = internalId;
-                IsConnected = isConnected;
-            }
+            IframeId = iframeId;
+            DeviceId = deviceId;
+            InternalId = internalId;
+            IsConnected = isConnected;
+
             Msg = Arcane.Msg;
             Msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string clientId) =>
             {
@@ -98,5 +99,10 @@ namespace ArcanepadSDK
         //     string fullEventName = $"{eventName}_{IframeId}";
         //     events.Off(fullEventName, callback);
         // }
+
+        public void Off()
+        {
+            events.UnsubscribeAll();
+        }
     }
 }

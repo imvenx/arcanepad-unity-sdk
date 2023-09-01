@@ -51,5 +51,10 @@ namespace ArcanepadSDK
                 }
             }
         }
+
+        public void UnsubscribeAll()
+        {
+            eventHandlers.Clear();
+        }
     }
 }

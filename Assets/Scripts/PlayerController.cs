@@ -34,6 +34,10 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(Vector3.down);
         });
+    }
 
+    void OnDestroy()
+    {
+        Pad.Off();
     }
 }
