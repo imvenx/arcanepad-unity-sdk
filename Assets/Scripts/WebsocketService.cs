@@ -118,6 +118,15 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         }
     }
 
+    public void EmitToAllViews(ArcaneBaseEvent e)
+    {
+        Emit(e, Arcane.iframeViewsIds);
+    }
+
+    public void EmitToAllPads(ArcaneBaseEvent e)
+    {
+        Emit(e, Arcane.iframePadsIds);
+    }
 
     public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
