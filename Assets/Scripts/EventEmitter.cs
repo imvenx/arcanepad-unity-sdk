@@ -4,7 +4,7 @@ using ArcanepadSDK.Models;
 
 namespace ArcanepadSDK
 {
-    public class EventEmitter
+    public class ArcaneEventEmitter
     {
         private Dictionary<string, Delegate> eventHandlers = new Dictionary<string, Delegate>();
 

@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using ArcanepadSDK;
 using ArcanepadSDK.Models;
 using UnityEngine;
 
@@ -47,12 +48,12 @@ namespace ArcanepadSDK.Models
 
     //#region  Events
 
-    public class ArcaneClientInitializeEvent : ArcaneBaseEvent
+    public class InitializeEvent : ArcaneBaseEvent
     {
         public string assignedClientId;
         public string assignedDeviceId;
         public GlobalState globalState;
-        public ArcaneClientInitializeEvent(string assignedClientId, string assignedDeviceId, GlobalState globalState) : base(AEventName.Initialize)
+        public InitializeEvent(string assignedClientId, string assignedDeviceId, GlobalState globalState) : base(AEventName.Initialize)
         {
             this.assignedClientId = assignedClientId;
             this.assignedDeviceId = assignedDeviceId;
@@ -84,15 +85,15 @@ namespace ArcanepadSDK.Models
 
     public class IframePadConnectEvent : ArcaneBaseEvent
     {
-        public string DeviceId { get; set; }
-        public string InternalClientId { get; set; }
-        public string IframeId { get; set; }
+        public string deviceId { get; set; }
+        public string internalId { get; set; }
+        public string iframeId { get; set; }
 
-        public IframePadConnectEvent(string clientId, string internalClientId, string deviceId) : base(AEventName.IframePadConnect)
+        public IframePadConnectEvent(string clientId, string internalId, string deviceId) : base(AEventName.IframePadConnect)
         {
-            IframeId = clientId;
-            InternalClientId = internalClientId;
-            DeviceId = deviceId;
+            iframeId = clientId;
+            this.internalId = internalId;
+            this.deviceId = deviceId;
         }
     }
 
@@ -107,8 +108,6 @@ namespace ArcanepadSDK.Models
             DeviceId = deviceId;
         }
     }
-
-
 
     public class StartGetRotationVectorEvent : ArcaneBaseEvent
     {
@@ -240,18 +239,11 @@ public class GlobalState
     }
 }
 
-// public class IframePad
-// {
-//     public string ClientId { get; set; }
-//     public string DeviceId { get; set; }
-//     public string InternalId { get; set; }
-//     public bool IsConnected { get; set; }
-
-//     public IframePad(string clientId, string deviceId, string internalId, bool isConnected)
-//     {
-//         this.ClientId = clientId;
-//         this.DeviceId = deviceId;
-//         this.InternalId = internalId;
-//         this.IsConnected = isConnected;
-//     }
-// }
+public class InitialState
+{
+    public List<ArcanePad> pads { get; }
+    public InitialState(List<ArcanePad> pads)
+    {
+        this.pads = pads;
+    }
+}

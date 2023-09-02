@@ -16,9 +16,10 @@ public class PlayerManager : MonoBehaviour
     public bool gameStarted { get; private set; }
     async void Start()
     {
-        var initalPads = await Arcane.ArcaneClientInitialized();
+        var initialState = await Arcane.ArcaneClientInitialized();
 
-        initalPads.ForEach(pad =>
+
+        initialState.pads.ForEach(pad =>
         {
             createPlayer(pad);
         });
@@ -30,20 +31,20 @@ public class PlayerManager : MonoBehaviour
 
         Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = players.Any(p => p.pad.iframeId == e.IframeId);
+            var playerExists = players.Any(p => p.pad.iframeId == e.iframeId);
             if (playerExists) return;
 
-            var pad = new ArcanePad(deviceId: e.DeviceId, internalId: e.InternalClientId, iframeId: e.IframeId, isConnected: true);
+            var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
 
             createPlayer(pad);
         });
 
         Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = players.Any(p => p.pad.iframeId == e.IframeId);
+            var playerExists = players.Any(p => p.pad.iframeId == e.iframeId);
             if (playerExists) return;
 
-            var pad = new ArcanePad(deviceId: e.DeviceId, internalId: e.InternalClientId, iframeId: e.IframeId, isConnected: true);
+            var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
 
             createPlayer(pad);
         });

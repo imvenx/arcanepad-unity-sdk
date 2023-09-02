@@ -48,7 +48,7 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         ws.OnClose += OnClose;
         ws.OnMessage += OnMessage;
 
-        On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) =>
+        On(AEventName.Initialize, (InitializeEvent e, string from) =>
         {
             if (string.IsNullOrEmpty(e.assignedClientId))
             {

@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
 using ArcanepadSDK.Models;
-using Newtonsoft.Json;
-using UnityEngine;
 
 namespace ArcanepadSDK
 {
     public class ArcanePad
     {
-        public string iframeId { get; set; }
         public string deviceId { get; set; }
         public string internalId { get; set; }
+        public string iframeId { get; set; }
         public bool isConnected { get; set; }
-        private EventEmitter events = new EventEmitter();
+        private ArcaneEventEmitter events = new ArcaneEventEmitter();
         private WebSocketService<string> Msg;
 
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
@@ -30,12 +28,12 @@ namespace ArcanepadSDK
 
             Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
             {
-                ProxyEvent(AEventName.IframePadConnect, e, e.IframeId);
+                ProxyEvent(AEventName.IframePadConnect, e, e.iframeId);
             });
 
             Msg.On(AEventName.IframePadDisconnect, (IframePadConnectEvent e, string from) =>
             {
-                ProxyEvent(AEventName.IframePadDisconnect, e, e.IframeId);
+                ProxyEvent(AEventName.IframePadDisconnect, e, e.iframeId);
             });
         }
 
@@ -66,14 +64,14 @@ namespace ArcanepadSDK
             events.On($"{AEventName.GetRotationVector}_{internalId}", callback);
         }
 
-        public void OnConnect(string padId, Action<IframePadConnectEvent> callback)
+        public void OnConnect(Action<IframePadConnectEvent> callback)
         {
-            events.On($"{AEventName.IframePadConnect}_{padId}", callback);
+            events.On($"{AEventName.IframePadConnect}_{iframeId}", callback);
         }
 
-        public void OnDisconnect(string padId, Action<IframePadDisconnectEvent> callback)
+        public void OnDisconnect(Action<IframePadDisconnectEvent> callback)
         {
-            events.On($"{AEventName.IframePadDisconnect}_{padId}", callback);
+            events.On($"{AEventName.IframePadDisconnect}_{iframeId}", callback);
         }
 
         public Action On<T>(string eventName, Action<T> callback) where T : ArcaneBaseEvent

@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(e.azimuth, e.pitch, e.roll);
         });
+
     }
 
     void OnDestroy()

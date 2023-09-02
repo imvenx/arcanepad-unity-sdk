@@ -17,10 +17,10 @@ public class Arcane : MonoBehaviour
     private static List<string> internalPadsIds = new List<string>();
     public static List<string> iframeViewsIds = new List<string>();
     public static List<string> iframePadsIds = new List<string>();
-    private static TaskCompletionSource<List<ArcanePad>> _arcaneClientInitialized = new TaskCompletionSource<List<ArcanePad>>();
+    private static TaskCompletionSource<InitialState> _arcaneClientInitialized = new TaskCompletionSource<InitialState>();
     // private static TaskCompletionSource<ArcaneClientInitializeEvent> _ArcaneClientInitialized = new TaskCompletionSource<ArcaneClientInitializeEvent>();
 
-    public static Task<List<ArcanePad>> ArcaneClientInitialized()
+    public static Task<InitialState> ArcaneClientInitialized()
     {
         return _arcaneClientInitialized.Task;
     }
@@ -35,9 +35,8 @@ public class Arcane : MonoBehaviour
         devices = new List<ArcaneDevice>();
         msg = new WebSocketService<string>(url, ArcaneDeviceType.view);
 
-        Action<ArcaneClientInitializeEvent> myCallback = (ArcaneClientInitializeEvent e) => OnInitialize(e);
-
-        msg.On(AEventName.Initialize, (ArcaneClientInitializeEvent e, string from) => OnInitialize(e));
+        Action unsubscribeInit = null;
+        unsubscribeInit = msg.On(AEventName.Initialize, (InitializeEvent e, string from) => Initialize(e, unsubscribeInit));
 
     }
 
@@ -61,22 +60,20 @@ public class Arcane : MonoBehaviour
         msg.ws.Close();
     }
 
-    void RefreshArcaneState(GlobalState globalState)
+    private void Initialize(InitializeEvent e, Action unsubscribeInit)
     {
-        devices = globalState.devices;
-        // InitPads(Devices);
-        InitClientsIds(devices);
-    }
+        devices = e.globalState.devices;
 
-    private void OnInitialize(ArcaneClientInitializeEvent e)
-    {
-        RefreshArcaneState(e.globalState);
+        InitClientsIds(devices);
 
         var pads = GetPads(e.globalState.devices);
 
-        _arcaneClientInitialized.SetResult(pads);
+        var initialState = new InitialState(pads);
+        _arcaneClientInitialized.SetResult(initialState);
 
         Debug.Log("Client initialized");
+
+        unsubscribeInit();
     }
 
     public List<ArcanePad> GetPads(IList<ArcaneDevice> _devices)
