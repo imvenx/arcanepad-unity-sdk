@@ -118,12 +118,12 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         }
     }
 
-    public void EmitToAllViews(ArcaneBaseEvent e)
+    public void EmitToViews(ArcaneBaseEvent e)
     {
         Emit(e, Arcane.iframeViewsIds);
     }
 
-    public void EmitToAllPads(ArcaneBaseEvent e)
+    public void EmitToPads(ArcaneBaseEvent e)
     {
         Emit(e, Arcane.iframePadsIds);
     }
