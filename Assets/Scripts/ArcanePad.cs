@@ -54,11 +54,6 @@ namespace ArcanepadSDK
             events.Off($"{AEventName.GetRotationVector}_{internalId}");
         }
 
-        public void Emit(ArcaneBaseEvent e)
-        {
-            Msg.Emit(e, new List<string> { iframeId });
-        }
-
         public void OnGetRotationVector(Action<GetRotationVectorEvent> callback)
         {
             events.On($"{AEventName.GetRotationVector}_{internalId}", callback);
@@ -72,6 +67,11 @@ namespace ArcanepadSDK
         public void OnDisconnect(Action<IframePadDisconnectEvent> callback)
         {
             events.On($"{AEventName.IframePadDisconnect}_{iframeId}", callback);
+        }
+
+        public void Emit(ArcaneBaseEvent e)
+        {
+            Msg.Emit(e, new List<string> { iframeId });
         }
 
         public Action On<T>(string eventName, Action<T> callback) where T : ArcaneBaseEvent
