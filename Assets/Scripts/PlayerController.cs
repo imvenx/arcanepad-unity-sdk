@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
         pad.On(AEventName.Left, (LeftEvent e) =>
         {
             transform.Translate(Vector3.left);
+            pad.Vibrate(200);
         });
         pad.On(AEventName.Right, (RightEvent e) =>
         {

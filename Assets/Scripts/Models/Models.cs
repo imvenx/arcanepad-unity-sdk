@@ -132,6 +132,15 @@ namespace ArcanepadSDK.Models
         }
     }
 
+    public class VibrateEvent : ArcaneBaseEvent
+    {
+        public int milliseconds;
+        public VibrateEvent(int milliseconds) : base(AEventName.Vibrate)
+        {
+            this.milliseconds = milliseconds;
+        }
+    }
+
     //#endregion 
 
     public class ArcaneClient
@@ -213,11 +222,12 @@ namespace ArcanepadSDK.Models
         public static string ClientConnect = "ClientConnect";
         public static string ClientDisconnect = "ClientDisconnect";
 
+        public static string IframePadConnect = "IframePadConnect";
+        public static string IframePadDisconnect = "IframePadDisconnect";
         public static string StartGetRotationVector = "StartGetRotationVector";
         public static string StopGetRotationVector = "StopGetRotationVector";
         public static string GetRotationVector = "GetRotationVector";
-        public static string IframePadConnect = "IframePadConnect";
-        public static string IframePadDisconnect = "IframePadDisconnect";
+        public static string Vibrate = "Vibrate";
     }
 }
 

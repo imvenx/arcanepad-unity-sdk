@@ -6,18 +6,22 @@ namespace ArcanepadSDK
 {
     public class ArcanePad
     {
-        public string deviceId { get; set; }
-        public string internalId { get; set; }
-        public string iframeId { get; set; }
+        public string deviceId { get; }
+        public string internalId { get; }
+        private List<string> internalIdList { get; }
+        public string iframeId { get; }
+        private List<string> iframeIdList { get; }
         public bool isConnected { get; set; }
         private ArcaneEventEmitter events = new ArcaneEventEmitter();
         private WebSocketService<string> Msg;
 
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
         {
-            this.iframeId = iframeId;
             this.deviceId = deviceId;
             this.internalId = internalId;
+            internalIdList = new List<string> { internalId };
+            this.iframeId = iframeId;
+            iframeIdList = new List<string> { iframeId };
             this.isConnected = isConnected;
 
             Msg = Arcane.msg;
@@ -45,18 +49,23 @@ namespace ArcanepadSDK
 
         public void StartGetRotationVector()
         {
-            Msg.Emit(new StartGetRotationVectorEvent(), new List<string> { internalId });
+            Msg.Emit(new StartGetRotationVectorEvent(), internalIdList);
         }
 
         public void StopGetRotationVector()
         {
-            Msg.Emit(new StopGetRotationVectorEvent(), new List<string> { internalId });
+            Msg.Emit(new StopGetRotationVectorEvent(), internalIdList);
             events.Off($"{AEventName.GetRotationVector}_{internalId}");
         }
 
         public void OnGetRotationVector(Action<GetRotationVectorEvent> callback)
         {
             events.On($"{AEventName.GetRotationVector}_{internalId}", callback);
+        }
+
+        public void Vibrate(int millisecconds)
+        {
+            Msg.Emit(new VibrateEvent(millisecconds), internalIdList);
         }
 
         public void OnConnect(Action<IframePadConnectEvent> callback)
@@ -71,7 +80,7 @@ namespace ArcanepadSDK
 
         public void Emit(ArcaneBaseEvent e)
         {
-            Msg.Emit(e, new List<string> { iframeId });
+            Msg.Emit(e, iframeIdList);
         }
 
         public Action On<T>(string eventName, Action<T> callback) where T : ArcaneBaseEvent
