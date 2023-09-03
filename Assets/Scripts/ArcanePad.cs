@@ -6,28 +6,28 @@ namespace ArcanepadSDK
 {
     public class ArcanePad
     {
-        public string deviceId { get; }
-        public string internalId { get; }
-        private List<string> internalIdList { get; }
-        public string iframeId { get; }
-        private List<string> iframeIdList { get; }
-        public bool isConnected { get; set; }
-        private ArcaneEventEmitter events = new ArcaneEventEmitter();
+        public string DeviceId { get; }
+        public string InternalId { get; }
+        private List<string> InternalIdList { get; }
+        public string IframeId { get; }
+        private List<string> IframeIdList { get; }
+        public bool IsConnected { get; private set; }
+        private ArcaneEventEmitter Events = new ArcaneEventEmitter();
         private WebSocketService<string> Msg;
 
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
         {
-            this.deviceId = deviceId;
-            this.internalId = internalId;
-            internalIdList = new List<string> { internalId };
-            this.iframeId = iframeId;
-            iframeIdList = new List<string> { iframeId };
-            this.isConnected = isConnected;
+            DeviceId = deviceId;
+            InternalId = internalId;
+            InternalIdList = new List<string> { internalId };
+            IframeId = iframeId;
+            IframeIdList = new List<string> { iframeId };
+            IsConnected = isConnected;
 
-            Msg = Arcane.msg;
-            Msg.On(AEventName.GetRotationVector, (GetRotationVectorEvent e, string clientId) =>
+            Msg = Arcane.Msg;
+            Msg.On(AEventName.GetQuaternion, (GetQuaternionEvent e, string clientId) =>
             {
-                ProxyEvent(AEventName.GetRotationVector, e, clientId);
+                ProxyEvent(AEventName.GetQuaternion, e, clientId);
             });
 
             Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
@@ -44,55 +44,60 @@ namespace ArcanepadSDK
         private void ProxyEvent(string eventName, ArcaneBaseEvent e, string padId)
         {
             string fullEventName = $"{eventName}_{padId}";
-            events.Emit(fullEventName, e);
+            Events.Emit(fullEventName, e);
         }
 
-        public void StartGetRotationVector()
+        public void StartGetQuaternion()
         {
-            Msg.Emit(new StartGetRotationVectorEvent(), internalIdList);
+            Msg.Emit(new StartGetQuaternionEvent(), InternalIdList);
         }
 
-        public void StopGetRotationVector()
+        public void StopGetQuaternion()
         {
-            Msg.Emit(new StopGetRotationVectorEvent(), internalIdList);
-            events.Off($"{AEventName.GetRotationVector}_{internalId}");
+            Msg.Emit(new StopGetQuaternionEvent(), InternalIdList);
+            Events.Off($"{AEventName.GetQuaternion}_{InternalId}");
         }
 
-        public void OnGetRotationVector(Action<GetRotationVectorEvent> callback)
+        public void OnGetQuaternion(Action<GetQuaternionEvent> callback)
         {
-            events.On($"{AEventName.GetRotationVector}_{internalId}", callback);
+            Events.On($"{AEventName.GetQuaternion}_{InternalId}", callback);
+        }
+
+        public void CalibrateQuaternion()
+        {
+            Msg.Emit(new CalibrateQuaternion(), InternalIdList);
         }
 
         public void Vibrate(int millisecconds)
         {
-            Msg.Emit(new VibrateEvent(millisecconds), internalIdList);
+            Msg.Emit(new VibrateEvent(millisecconds), InternalIdList);
         }
 
         public void OnConnect(Action<IframePadConnectEvent> callback)
         {
-            events.On($"{AEventName.IframePadConnect}_{iframeId}", callback);
+            Events.On($"{AEventName.IframePadConnect}_{IframeId}", callback);
         }
 
         public void OnDisconnect(Action<IframePadDisconnectEvent> callback)
         {
-            events.On($"{AEventName.IframePadDisconnect}_{iframeId}", callback);
+            Events.On($"{AEventName.IframePadDisconnect}_{IframeId}", callback);
         }
 
         public void Emit(ArcaneBaseEvent e)
         {
-            Msg.Emit(e, iframeIdList);
+            Msg.Emit(e, IframeIdList);
         }
 
         public Action On<T>(string eventName, Action<T> callback) where T : ArcaneBaseEvent
         {
-            string fullEventName = $"{eventName}_{iframeId}";
-            events.On(fullEventName, callback);
+            string fullEventName = $"{eventName}_{IframeId}";
+            Events.On(fullEventName, callback);
 
             Action<T, string> proxyCallback = (T e, string from) =>
             {
-                if (from == iframeId)
+                if (from == IframeId)
                 {
-                    events.Emit(fullEventName, e);
+                    Events.Emit(fullEventName, e);
                 }
             };
 
@@ -100,7 +105,7 @@ namespace ArcanepadSDK
 
             return () =>
             {
-                events.Off(fullEventName);
+                Events.Off(fullEventName);
                 unsubscribe();
             };
         }
@@ -113,7 +118,7 @@ namespace ArcanepadSDK
 
         public void Off()
         {
-            events.UnsubscribeAll();
+            Events.UnsubscribeAll();
         }
     }
 }

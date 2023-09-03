@@ -10,45 +10,51 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public ArcanePad pad { get; private set; }
-
+    public ArcanePad Pad { get; private set; }
+    private Quaternion InitialQuaternion = new Quaternion(0, 0, 0, 0);
     public void Initialize(ArcanePad pad)
     {
-        this.pad = pad;
-    }
-
-    void Start()
-    {
-        pad.On(AEventName.Left, (LeftEvent e) =>
-        {
-            transform.Translate(Vector3.left);
-            pad.Vibrate(200);
-        });
-        pad.On(AEventName.Right, (RightEvent e) =>
+        Pad = pad;
+        Pad.On(AEventName.Left, (LeftEvent e) =>
+       {
+           transform.Translate(Vector3.left);
+           Pad.Vibrate(200);
+       });
+        Pad.On(AEventName.Right, (RightEvent e) =>
         {
             transform.Translate(Vector3.right);
         });
-        pad.On(AEventName.Up, (UpEvent e) =>
+        Pad.On(AEventName.Up, (UpEvent e) =>
         {
             transform.Translate(Vector3.up);
         });
-        pad.On(AEventName.Down, (DownEvent e) =>
+        Pad.On(AEventName.Down, (DownEvent e) =>
         {
             transform.Translate(Vector3.down);
         });
 
-        pad.Emit(new AttackEvent(99));
+        Pad.Emit(new AttackEvent(99));
 
-        pad.StartGetRotationVector();
-        pad.OnGetRotationVector((GetRotationVectorEvent e) =>
+        Pad.StartGetQuaternion();
+
+
+        // bool firstTime = true;
+        Pad.OnGetQuaternion((GetQuaternionEvent e) =>
         {
-            transform.rotation = Quaternion.Euler(e.azimuth, e.pitch, e.roll);
+            // if (firstTime)
+            // {
+            //     initialQuaternion = new Quaternion(-e.x, -e.y, e.z, e.w);
+            //     firstTime = false;
+            // }
+            // transform.rotation = Quaternion.Inverse(initialQuaternion) * new Quaternion(-e.x, -e.y, e.z, e.w);
+            transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
+
         });
 
     }
 
     void OnDestroy()
     {
-        pad.Off();
+        Pad.Off();
     }
 }

@@ -11,21 +11,21 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
     public delegate void EventCallback(Dictionary<string, object> data, string from);
     public delegate void GenericEventCallback<T>(T eventData, string from) where T : ArcaneBaseEvent;
 
-    public WebSocket ws;
+    public WebSocket Ws;
     private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
-    private string url;
-    private const int reconnectionDelayMilliseconds = 1000;
-    private string deviceType;
-    private string clientId;
-    private string deviceId;
+    private string Url { get; set; }
+    private const int ReconnectionDelayMilliseconds = 1000;
+    private string DeviceType { get; set; }
+    public string ClientId { get; private set; }
+    public string DeviceId { get; private set; }
 
     // public event Action OnConnected;
     // public event Action OnInitialized;
 
     public WebSocketService(string url, string deviceType)
     {
-        this.url = url;
-        this.deviceType = deviceType;
+        Url = url;
+        DeviceType = deviceType;
         InitWebSocket();
     }
 
@@ -35,18 +35,18 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         {
             clientType = "external",
             deviceId = "unity-dev",
-            deviceType = deviceType
+            deviceType = DeviceType
         };
 
         string clientInitDataStr = JsonConvert.SerializeObject(clientInitData);
 
-        url = url + "?clientInitData=" + clientInitDataStr;
-        ws = new WebSocket(url);
+        Url = Url + "?clientInitData=" + clientInitDataStr;
+        Ws = new WebSocket(Url);
 
-        ws.OnOpen += OnOpen;
-        ws.OnError += OnError;
-        ws.OnClose += OnClose;
-        ws.OnMessage += OnMessage;
+        Ws.OnOpen += OnOpen;
+        Ws.OnError += OnError;
+        Ws.OnClose += OnClose;
+        Ws.OnMessage += OnMessage;
 
         On(AEventName.Initialize, (InitializeEvent e, string from) =>
         {
@@ -60,12 +60,12 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
                 Debug.LogError("Missing deviceOd on initialize");
                 return;
             }
-            clientId = e.assignedClientId;
-            deviceId = e.assignedDeviceId;
-            Debug.Log("Client initialized with clientId: " + clientId + " and deviceId: " + deviceId);
+            ClientId = e.assignedClientId;
+            DeviceId = e.assignedDeviceId;
+            Debug.Log("Client initialized with clientId: " + ClientId + " and deviceId: " + DeviceId);
         });
 
-        await ws.Connect();
+        await Ws.Connect();
     }
 
     private void OnOpen()
@@ -112,20 +112,20 @@ public class WebSocketService<CustomEventNameType> : IWebSocketService
         var eventTo = new ArcaneMessageTo(e, to);
         string eventToStr = JsonConvert.SerializeObject(eventTo);
 
-        if (ws.State == WebSocketState.Open)
+        if (Ws.State == WebSocketState.Open)
         {
-            ws.SendText(eventToStr);
+            Ws.SendText(eventToStr);
         }
     }
 
     public void EmitToViews(ArcaneBaseEvent e)
     {
-        Emit(e, Arcane.iframeViewsIds);
+        Emit(e, Arcane.IframeViewsIds);
     }
 
     public void EmitToPads(ArcaneBaseEvent e)
     {
-        Emit(e, Arcane.iframePadsIds);
+        Emit(e, Arcane.IframePadsIds);
     }
 
     public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent

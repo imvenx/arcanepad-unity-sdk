@@ -109,26 +109,36 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class StartGetRotationVectorEvent : ArcaneBaseEvent
+    public class StartGetQuaternionEvent : ArcaneBaseEvent
     {
-        public StartGetRotationVectorEvent() : base(AEventName.StartGetRotationVector) { }
+        public StartGetQuaternionEvent() : base(AEventName.StartGetQuaternion) { }
     }
 
-    public class StopGetRotationVectorEvent : ArcaneBaseEvent
+    public class StopGetQuaternionEvent : ArcaneBaseEvent
     {
-        public StopGetRotationVectorEvent() : base(AEventName.StopGetRotationVector) { }
+        public StopGetQuaternionEvent() : base(AEventName.StopGetQuaternion) { }
     }
 
-    public class GetRotationVectorEvent : ArcaneBaseEvent
+    public class GetQuaternionEvent : ArcaneBaseEvent
     {
-        public float azimuth;
-        public float pitch;
-        public float roll;
-        public GetRotationVectorEvent(float azimuth, float pitch, float roll) : base(AEventName.GetRotationVector)
+        public float w;
+        public float x;
+        public float y;
+        public float z;
+        public GetQuaternionEvent(float w, float x, float y, float z) : base(AEventName.GetQuaternion)
         {
-            this.azimuth = azimuth;
-            this.pitch = pitch;
-            this.roll = roll;
+            this.w = w;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    public class CalibrateQuaternion : ArcaneBaseEvent
+    {
+        public CalibrateQuaternion() : base(AEventName.CalibrateQuaternion)
+        {
+
         }
     }
 
@@ -224,9 +234,10 @@ namespace ArcanepadSDK.Models
 
         public static string IframePadConnect = "IframePadConnect";
         public static string IframePadDisconnect = "IframePadDisconnect";
-        public static string StartGetRotationVector = "StartGetRotationVector";
-        public static string StopGetRotationVector = "StopGetRotationVector";
-        public static string GetRotationVector = "GetRotationVector";
+        public static string StartGetQuaternion = "StartGetQuaternion";
+        public static string StopGetQuaternion = "StopGetQuaternion";
+        public static string GetQuaternion = "GetQuaternion";
+        public static string CalibrateQuaternion = "CalibrateQuaternion";
         public static string Vibrate = "Vibrate";
     }
 }

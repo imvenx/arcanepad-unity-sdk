@@ -29,9 +29,9 @@ public class PlayerManager : MonoBehaviour
         /////// ON IFRAME PAD CONNECT => CREATE PLAYER IF NO EXIST
         /////// ON IFRAME PAD DISCONNECT => REMOVE PLAYER   
 
-        Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
+        Arcane.Msg.on(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = players.Any(p => p.pad.iframeId == e.iframeId);
+            var playerExists = players.Any(p => p.Pad.IframeId == e.iframeId);
             if (playerExists) return;
 
             var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
@@ -39,9 +39,9 @@ public class PlayerManager : MonoBehaviour
             createPlayer(pad);
         });
 
-        Arcane.msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
+        Arcane.Msg.on(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
-            var playerExists = players.Any(p => p.pad.iframeId == e.iframeId);
+            var playerExists = players.Any(p => p.Pad.IframeId == e.iframeId);
             if (playerExists) return;
 
             var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
@@ -49,9 +49,9 @@ public class PlayerManager : MonoBehaviour
             createPlayer(pad);
         });
 
-        Arcane.msg.On(AEventName.IframePadDisconnect, (IframePadDisconnectEvent e) =>
+        Arcane.Msg.on(AEventName.IframePadDisconnect, (IframePadDisconnectEvent e) =>
         {
-            var player = players.FirstOrDefault(p => p.pad.iframeId == e.IframeId);
+            var player = players.FirstOrDefault(p => p.Pad.IframeId == e.IframeId);
 
             destroyPlayer(player);
         });
