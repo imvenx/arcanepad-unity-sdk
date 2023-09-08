@@ -24,21 +24,6 @@ public class PlayerManager : MonoBehaviour
             createPlayer(pad);
         });
 
-        // Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) => CreatePlayerIfNotExist(e.Pad));
-
-        /////// ON IFRAME PAD CONNECT => CREATE PLAYER IF NO EXIST
-        /////// ON IFRAME PAD DISCONNECT => REMOVE PLAYER   
-
-        Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
-        {
-            var playerExists = players.Any(p => p.Pad.IframeId == e.iframeId);
-            if (playerExists) return;
-
-            var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
-
-            createPlayer(pad);
-        });
-
         Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>
         {
             var playerExists = players.Any(p => p.Pad.IframeId == e.iframeId);
@@ -53,6 +38,7 @@ public class PlayerManager : MonoBehaviour
         {
             var player = players.FirstOrDefault(p => p.Pad.IframeId == e.IframeId);
 
+            if (player == null) Debug.LogError("Player not found to remove on disconnect");
             destroyPlayer(player);
         });
 
@@ -69,6 +55,7 @@ public class PlayerManager : MonoBehaviour
 
     void destroyPlayer(PlayerController playerComponent)
     {
+        playerComponent.Pad.Dispose();
         players.Remove(playerComponent);
         Destroy(playerComponent.gameObject);
     }

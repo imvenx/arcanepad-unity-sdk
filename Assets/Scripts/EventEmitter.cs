@@ -35,7 +35,7 @@ namespace ArcanepadSDK
             }
         }
 
-        public void Emit<T>(string name, T e) where T : ArcanepadSDK.Models.ArcaneBaseEvent
+        public void Emit<T>(string name, T e) where T : ArcaneBaseEvent
         {
             if (eventHandlers.ContainsKey(name))
             {
@@ -52,7 +52,7 @@ namespace ArcanepadSDK
             }
         }
 
-        public void UnsubscribeAll()
+        public void OffAll()
         {
             eventHandlers.Clear();
         }

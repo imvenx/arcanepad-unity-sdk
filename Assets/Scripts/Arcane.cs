@@ -6,8 +6,6 @@ using ArcanepadSDK;
 using ArcanepadSDK.Models;
 using UnityEngine;
 
-
-
 public class Arcane : MonoBehaviour
 {
     public static WebSocketService<string> Msg;
@@ -18,6 +16,10 @@ public class Arcane : MonoBehaviour
     public static List<string> IframeViewsIds = new List<string>();
     public static List<string> IframePadsIds = new List<string>();
     public static ArcanePad Pad { get; private set; }
+    public string LibraryVersion { get; } = "1.0.0";
+
+    [SerializeField]
+    public ArcaneDeviceTypeEnum DeviceType;
     private static TaskCompletionSource<InitialState> _arcaneClientInitialized = new TaskCompletionSource<InitialState>();
     // private static TaskCompletionSource<ArcaneClientInitializeEvent> _ArcaneClientInitialized = new TaskCompletionSource<ArcaneClientInitializeEvent>();
 
@@ -28,12 +30,15 @@ public class Arcane : MonoBehaviour
 
     void Awake()
     {
+        DontDestroyOnLoad(this);
+
         string url = "wss://localhost:3005";
 #if DEBUG || UNITY_EDITOR
         url = "ws://localhost:3009";
 #endif
 
         Devices = new List<ArcaneDevice>();
+        var deviceType = DeviceType == ArcaneDeviceTypeEnum.view ? ArcaneDeviceType.view : ArcaneDeviceType.pad;
         Msg = new WebSocketService<string>(url, ArcaneDeviceType.view);
 
         Action unsubscribeInit = null;
@@ -70,7 +75,10 @@ public class Arcane : MonoBehaviour
 
         var pads = GetPads(e.globalState.devices);
 
-        Pad = pads.FirstOrDefault(p => p.DeviceId == Msg.DeviceId); // Check if this line actually works!
+        if (DeviceType == ArcaneDeviceTypeEnum.pad)
+        {
+            Pad = pads.FirstOrDefault(p => p.DeviceId == Msg.DeviceId); // Check if this line actually works!
+        }
 
         var initialState = new InitialState(pads);
 

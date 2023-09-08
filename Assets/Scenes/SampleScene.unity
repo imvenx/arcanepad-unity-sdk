@@ -247,6 +247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2375617300940316993, guid: 8e58d0990d55e95478256869ada82cbe, type: 3}
+  players: []
 --- !u!4 &946999555
 Transform:
   m_ObjectHideFlags: 0
@@ -363,11 +364,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1644815867}
-  - component: {fileID: 1644815868}
-  - component: {fileID: 1644815869}
   - component: {fileID: 1644815870}
   m_Layer: 0
-  m_Name: ws
+  m_Name: Arcane_Library
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -388,30 +387,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1644815868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644815866}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55677b6d4c5cd604eb64ccf014b02ffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1644815869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644815866}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 941f184ca35bcc2458ac07267ff7621d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1644815870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec6b187d927c05a4fb88ce2dbc3dfa77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DeviceType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

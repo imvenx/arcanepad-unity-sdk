@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ArcanepadSDK.Models;
+using Debug = UnityEngine.Debug;
 
 namespace ArcanepadSDK
 {
-    public class ArcanePad
+    public class ArcanePad : IDisposable
     {
         public string DeviceId { get; }
         public string InternalId { get; }
@@ -30,6 +32,16 @@ namespace ArcanepadSDK
                 ProxyEvent(AEventName.GetQuaternion, e, clientId);
             });
 
+            Msg.On(AEventName.GetRotationEuler, (GetRotationEulerEvent e, string clientId) =>
+            {
+                ProxyEvent(AEventName.GetRotationEuler, e, clientId);
+            });
+
+            Msg.On(AEventName.GetPointer, (GetPointerEvent e, string clientId) =>
+            {
+                ProxyEvent(AEventName.GetPointer, e, clientId);
+            });
+
             Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
             {
                 ProxyEvent(AEventName.IframePadConnect, e, e.iframeId);
@@ -52,10 +64,10 @@ namespace ArcanepadSDK
             Msg.Emit(new StartGetQuaternionEvent(), InternalIdList);
         }
 
-        public void StopGetQuaternion()
+        public void StopGetQuaternion(bool offAllListeners = false)
         {
             Msg.Emit(new StopGetQuaternionEvent(), InternalIdList);
-            Events.Off($"{AEventName.GetQuaternion}_{InternalId}");
+            if (offAllListeners) Events.Off($"{AEventName.GetQuaternion}_{InternalId}");
         }
 
         public void OnGetQuaternion(Action<GetQuaternionEvent> callback)
@@ -66,6 +78,42 @@ namespace ArcanepadSDK
         public void CalibrateQuaternion()
         {
             Msg.Emit(new CalibrateQuaternion(), InternalIdList);
+        }
+        public void StartGetRotationEuler()
+        {
+            Msg.Emit(new StartGetRotationEulerEvent(), InternalIdList);
+        }
+
+        public void StopGetRotationEuler(bool offAllListeners = false)
+        {
+            Msg.Emit(new StopGetRotationEulerEvent(), InternalIdList);
+            if (offAllListeners) Events.Off($"{AEventName.GetRotationEuler}_{InternalId}");
+        }
+
+        public void OnGetRotationEuler(Action<GetRotationEulerEvent> callback)
+        {
+            Events.On($"{AEventName.GetRotationEuler}_{InternalId}", callback);
+        }
+
+        public void StartGetPointer()
+        {
+            Msg.Emit(new StartGetPointerEvent(), InternalIdList);
+        }
+
+        public void StopGetPointer(bool offAllListeners = false)
+        {
+            Msg.Emit(new StopGetPointerEvent(), InternalIdList);
+            if (offAllListeners) Events.Off($"{AEventName.GetPointer}_{InternalId}");
+        }
+
+        public void OnGetPointer(Action<GetPointerEvent> callback)
+        {
+            Events.On($"{AEventName.GetPointer}_{InternalId}", callback);
+        }
+
+        public void CalibratePointer()
+        {
+            Msg.Emit(new CalibratePointer(), InternalIdList);
         }
 
         public void Vibrate(int millisecconds)
@@ -110,15 +158,15 @@ namespace ArcanepadSDK
             };
         }
 
-        // public void Off<T>(string eventName, Action<T> callback = null) where T : ArcaneBaseEvent
-        // {
-        //     string fullEventName = $"{eventName}_{IframeId}";
-        //     events.Off(fullEventName, callback);
-        // }
-
-        public void Off()
+        public void Off<T>(string eventName, Action<T> callback = null) where T : ArcaneBaseEvent
         {
-            Events.UnsubscribeAll();
+            string fullEventName = $"{eventName}_{IframeId}";
+            Events.Off(fullEventName, callback);
+        }
+
+        public void Dispose()
+        {
+            Events.OffAll();
         }
     }
 }

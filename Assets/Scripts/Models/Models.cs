@@ -109,15 +109,8 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class StartGetQuaternionEvent : ArcaneBaseEvent
-    {
-        public StartGetQuaternionEvent() : base(AEventName.StartGetQuaternion) { }
-    }
-
-    public class StopGetQuaternionEvent : ArcaneBaseEvent
-    {
-        public StopGetQuaternionEvent() : base(AEventName.StopGetQuaternion) { }
-    }
+    public class StartGetQuaternionEvent : ArcaneBaseEvent { public StartGetQuaternionEvent() : base(AEventName.StartGetQuaternion) { } }
+    public class StopGetQuaternionEvent : ArcaneBaseEvent { public StopGetQuaternionEvent() : base(AEventName.StopGetQuaternion) { } }
 
     public class GetQuaternionEvent : ArcaneBaseEvent
     {
@@ -134,13 +127,39 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class CalibrateQuaternion : ArcaneBaseEvent
-    {
-        public CalibrateQuaternion() : base(AEventName.CalibrateQuaternion)
-        {
+    public class CalibrateQuaternion : ArcaneBaseEvent { public CalibrateQuaternion() : base(AEventName.CalibrateQuaternion) { } }
 
+    public class StartGetRotationEulerEvent : ArcaneBaseEvent { public StartGetRotationEulerEvent() : base(AEventName.StartGetRotationEuler) { } }
+    public class StopGetRotationEulerEvent : ArcaneBaseEvent { public StopGetRotationEulerEvent() : base(AEventName.StopGetRotationEuler) { } }
+
+    public class GetRotationEulerEvent : ArcaneBaseEvent
+    {
+        public float x;
+        public float y;
+        public float z;
+        public GetRotationEulerEvent(float x, float y, float z) : base(AEventName.GetRotationEuler)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
     }
+
+    public class StartGetPointerEvent : ArcaneBaseEvent { public StartGetPointerEvent() : base(AEventName.StartGetPointer) { } }
+    public class StopGetPointerEvent : ArcaneBaseEvent { public StopGetPointerEvent() : base(AEventName.StopGetPointer) { } }
+
+    public class GetPointerEvent : ArcaneBaseEvent
+    {
+        public float x;
+        public float y;
+        public GetPointerEvent(float x, float y) : base(AEventName.GetPointer)
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public class CalibratePointer : ArcaneBaseEvent { public CalibratePointer() : base(AEventName.CalibratePointer) { } }
 
     public class VibrateEvent : ArcaneBaseEvent
     {
@@ -184,6 +203,11 @@ namespace ArcanepadSDK.Models
         public static readonly string pad = "pad";
         public static readonly string view = "view";
         public static readonly string none = "none";
+    }
+
+    public enum ArcaneDeviceTypeEnum
+    {
+        view, pad
     }
 
     public class ArcaneClientInitData
@@ -234,10 +258,22 @@ namespace ArcanepadSDK.Models
 
         public static string IframePadConnect = "IframePadConnect";
         public static string IframePadDisconnect = "IframePadDisconnect";
+
         public static string StartGetQuaternion = "StartGetQuaternion";
         public static string StopGetQuaternion = "StopGetQuaternion";
         public static string GetQuaternion = "GetQuaternion";
         public static string CalibrateQuaternion = "CalibrateQuaternion";
+
+        public static string StartGetRotationEuler = "StartGetRotationEuler";
+        public static string StopGetRotationEuler = "StopGetRotationEuler";
+        public static string GetRotationEuler = "GetRotationEuler";
+        public static string CalibrateRotationEuler = "CalibrateRotationEuler";
+
+        public static string StartGetPointer = "StartGetPointer";
+        public static string StopGetPointer = "StopGetPointer";
+        public static string GetPointer = "GetPointer";
+        public static string CalibratePointer = "CalibratePointer";
+
         public static string Vibrate = "Vibrate";
     }
 }

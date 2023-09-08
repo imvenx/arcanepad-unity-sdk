@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,7 +12,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public ArcanePad Pad { get; private set; }
-    private Quaternion InitialQuaternion = new Quaternion(0, 0, 0, 0);
     public void Initialize(ArcanePad pad)
     {
         Pad = pad;
@@ -33,28 +33,21 @@ public class PlayerController : MonoBehaviour
             transform.Translate(Vector3.down);
         });
 
-        Pad.Emit(new AttackEvent(99));
+        // Pad.Emit(new AttackEvent(99));
 
-        Pad.StartGetQuaternion();
+        // Pad.StartGetQuaternion();
+        // Pad.OnGetQuaternion((GetQuaternionEvent e) =>
+        // {
+        //     transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
+        // });
 
-
-        // bool firstTime = true;
-        Pad.OnGetQuaternion((GetQuaternionEvent e) =>
+        Pad.StartGetPointer();
+        Pad.OnGetPointer((e) =>
         {
-            // if (firstTime)
-            // {
-            //     initialQuaternion = new Quaternion(-e.x, -e.y, e.z, e.w);
-            //     firstTime = false;
-            // }
-            // transform.rotation = Quaternion.Inverse(initialQuaternion) * new Quaternion(-e.x, -e.y, e.z, e.w);
-            transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
-
+            Debug.Log(e.x);
+            Debug.Log(e.y);
         });
 
     }
 
-    void OnDestroy()
-    {
-        Pad.Off();
-    }
 }
