@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class Arcane : MonoBehaviour
 {
     public static WebSocketService<string> Msg;
     public static IList<ArcaneDevice> Devices;
-    // public static List<ArcanePad> Pads = new List<ArcanePad>();
+    public static List<ArcanePad> Pads = new List<ArcanePad>();
     private static List<string> InternalViewsIds = new List<string>();
     private static List<string> InternalPadsIds = new List<string>();
     public static List<string> IframeViewsIds = new List<string>();
@@ -71,16 +72,12 @@ public class Arcane : MonoBehaviour
     {
         RefreshGlobalState(e.globalState);
 
-        Debug.Log("Client initialized");
+        // if (DeviceType == ArcaneDeviceTypeEnum.pad)
+        // {
+        Pad = Pads.FirstOrDefault(p => p.DeviceId == Msg.DeviceId);
+        // }
 
-        var pads = GetPads(e.globalState.devices);
-
-        if (DeviceType == ArcaneDeviceTypeEnum.pad)
-        {
-            Pad = pads.FirstOrDefault(p => p.DeviceId == Msg.DeviceId); // Check if this line actually works!
-        }
-
-        var initialState = new InitialState(pads);
+        var initialState = new InitialState(Pads);
 
         _arcaneClientInitialized.SetResult(initialState);
 
@@ -92,11 +89,13 @@ public class Arcane : MonoBehaviour
         Devices = globalState.devices;
 
         RefreshClientsIds(Devices);
+
+        Pads = GetPads(Devices);
     }
 
     public List<ArcanePad> GetPads(IList<ArcaneDevice> _devices)
     {
-        List<ArcanePad> Pads = new List<ArcanePad>();
+        var pads = new List<ArcanePad>();
 
         var padDevices = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad && device.clients.Any(c => c.clientType == ArcaneClientType.iframe)).ToList();
 
@@ -115,15 +114,16 @@ public class Arcane : MonoBehaviour
                 Debug.LogError("Tried to set pad but internalClientId was not found");
             }
 
-            Pads.Add(new ArcanePad(
+            pads.Add(new ArcanePad(
                 deviceId: padDevice.id,
                 internalId: internalClientId,
                 iframeId: iframeClientId,
-                isConnected: true
+                isConnected: true,
+                user: padDevice.user
             ));
         });
 
-        return Pads;
+        return pads;
     }
 
 

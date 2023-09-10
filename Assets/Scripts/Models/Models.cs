@@ -196,6 +196,7 @@ namespace ArcanepadSDK.Models
         public string id { get; set; }
         public IList<ArcaneClient> clients { get; set; }
         public string deviceType { get; set; }
+        public ArcaneUser user { get; set; } = null;
     }
 
     public class ArcaneDeviceType
@@ -226,7 +227,7 @@ namespace ArcanepadSDK.Models
 
     public interface InitIframeQueryParams
     {
-        string deviceId { get; }
+        string deviceId { get; set; }
     }
 
     public class AEventName
@@ -302,5 +303,18 @@ public class InitialState
     public InitialState(List<ArcanePad> pads)
     {
         this.pads = pads;
+    }
+}
+
+public class ArcaneUser
+{
+    public string id { get; }
+    public string name { get; }
+    public string color { get; }
+    public ArcaneUser(string id, string name, string color)
+    {
+        this.id = id;
+        this.name = name;
+        this.color = color;
     }
 }

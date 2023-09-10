@@ -8,6 +8,7 @@ namespace ArcanepadSDK
 {
     public class ArcanePad : IDisposable
     {
+        public ArcaneUser User { get; }
         public string DeviceId { get; }
         public string InternalId { get; }
         private List<string> InternalIdList { get; }
@@ -17,8 +18,9 @@ namespace ArcanepadSDK
         private ArcaneEventEmitter Events = new ArcaneEventEmitter();
         private WebSocketService<string> Msg;
 
-        public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected)
+        public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected, ArcaneUser user = null)
         {
+            User = user;
             DeviceId = deviceId;
             InternalId = internalId;
             InternalIdList = new List<string> { internalId };

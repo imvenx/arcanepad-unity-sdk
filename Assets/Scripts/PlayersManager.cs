@@ -18,7 +18,6 @@ public class PlayerManager : MonoBehaviour
     {
         var initialState = await Arcane.ArcaneClientInitialized();
 
-
         initialState.pads.ForEach(pad =>
         {
             createPlayer(pad);
@@ -29,7 +28,8 @@ public class PlayerManager : MonoBehaviour
             var playerExists = players.Any(p => p.Pad.IframeId == e.iframeId);
             if (playerExists) return;
 
-            var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true);
+            var pad = new ArcanePad(deviceId: e.deviceId, internalId: e.internalId, iframeId: e.iframeId, isConnected: true,
+            user: Arcane.Devices.FirstOrDefault(d => d.id == e.deviceId).user);
 
             createPlayer(pad);
         });
