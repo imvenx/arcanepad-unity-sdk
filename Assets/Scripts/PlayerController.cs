@@ -35,11 +35,12 @@ public class PlayerController : MonoBehaviour
 
         // Pad.Emit(new AttackEvent(99));
 
-        // Pad.StartGetQuaternion();
-        // Pad.OnGetQuaternion((GetQuaternionEvent e) =>
-        // {
-        //     transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
-        // });
+        Pad.StartGetQuaternion();
+        Pad.OnGetQuaternion((GetQuaternionEvent e) =>
+        {
+            if (PlayerManager.isGamePaused) return;
+            transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
+        });
 
         // Pad.StartGetPointer();
         // Pad.OnGetPointer((e) =>

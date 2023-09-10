@@ -46,12 +46,24 @@ namespace ArcanepadSDK
 
             Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e, string from) =>
             {
+                isConnected = true;
                 ProxyEvent(AEventName.IframePadConnect, e, e.iframeId);
             });
 
             Msg.On(AEventName.IframePadDisconnect, (IframePadConnectEvent e, string from) =>
             {
+                isConnected = false;
                 ProxyEvent(AEventName.IframePadDisconnect, e, e.iframeId);
+            });
+
+            Msg.On(AEventName.OpenArcaneMenu, (OpenArcaneMenuEvent e, string fromId) =>
+            {
+                ProxyEvent(AEventName.OpenArcaneMenu, e, fromId);
+            });
+
+            Msg.On(AEventName.CloseArcaneMenu, (CloseArcaneMenuEvent e, string fromId) =>
+            {
+                ProxyEvent(AEventName.CloseArcaneMenu, e, fromId);
             });
         }
 
@@ -131,6 +143,16 @@ namespace ArcanepadSDK
         public void OnDisconnect(Action<IframePadDisconnectEvent> callback)
         {
             Events.On($"{AEventName.IframePadDisconnect}_{IframeId}", callback);
+        }
+
+        public void OnOpenArcaneMenu(Action<OpenArcaneMenuEvent> callback)
+        {
+            Events.On($"{AEventName.OpenArcaneMenu}_{IframeId}", callback);
+        }
+
+        public void OnCloseArcaneMenu(Action<CloseArcaneMenuEvent> callback)
+        {
+            Events.On($"{AEventName.CloseArcaneMenu}_{IframeId}", callback);
         }
 
         public void Emit(ArcaneBaseEvent e)

@@ -2,18 +2,14 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using ArcanepadSDK.Models;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using Unity.VisualScripting.Dependencies.NCalc;
 using ArcanepadSDK;
-using System.Collections;
-using System;
 
 public class PlayerManager : MonoBehaviour
 {
     public GameObject playerPrefab;
     public List<PlayerController> players = new List<PlayerController>();
     public bool gameStarted { get; private set; }
+    public static bool isGamePaused = false;
     async void Start()
     {
         var initialState = await Arcane.ArcaneClientInitialized();
@@ -21,6 +17,15 @@ public class PlayerManager : MonoBehaviour
         initialState.pads.ForEach(pad =>
         {
             createPlayer(pad);
+        });
+
+        Arcane.Msg.On(AEventName.OpenArcaneMenu, () =>
+        {
+            isGamePaused = true;
+        });
+        Arcane.Msg.On(AEventName.CloseArcaneMenu, () =>
+        {
+            isGamePaused = false;
         });
 
         Arcane.Msg.On(AEventName.IframePadConnect, (IframePadConnectEvent e) =>

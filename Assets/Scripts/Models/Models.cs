@@ -72,6 +72,18 @@ namespace ArcanepadSDK.Models
         }
     }
 
+    public class UpdateUserEvent : ArcaneBaseEvent
+    {
+        public ArcaneUser user;
+        public UpdateUserEvent(ArcaneUser user) : base(AEventName.UpdateUser)
+        {
+            this.user = user;
+        }
+    }
+
+    public class OpenArcaneMenuEvent : ArcaneBaseEvent { public OpenArcaneMenuEvent() : base(AEventName.OpenArcaneMenu) { } }
+    public class CloseArcaneMenuEvent : ArcaneBaseEvent { public CloseArcaneMenuEvent() : base(AEventName.CloseArcaneMenu) { } }
+
     public class ClientDisconnectEvent : ArcaneBaseEvent
     {
         public string clientId;
@@ -276,6 +288,11 @@ namespace ArcanepadSDK.Models
         public static string CalibratePointer = "CalibratePointer";
 
         public static string Vibrate = "Vibrate";
+
+        public static string UpdateUser = "UpdateUser";
+
+        public static string OpenArcaneMenu = "OpenArcaneMenu";
+        public static string CloseArcaneMenu = "CloseArcaneMenu";
     }
 }
 
