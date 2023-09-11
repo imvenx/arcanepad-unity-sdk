@@ -85,8 +85,8 @@ public class WebSocketService<CustomEventNameType>
 
         // if (closeCode == WebSocketCloseCode.Normal) return;
 #if !UNITY_EDITOR
-        await Task.Delay(reconnectionDelayMilliseconds);
-        Debug.Log($"Trying to reconnect...");
+        await Task.Delay(reconnectionDelayMilliseconds); 
+        Debug.Log($"Trying to reconnect..."); // TODO: DOES RECONNECT WORK?
         await ws.Connect();
 #endif
     }
