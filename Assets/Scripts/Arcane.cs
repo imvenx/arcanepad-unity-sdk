@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
-using Newtonsoft.Json;
 using UnityEngine;
 
 public class Arcane : MonoBehaviour

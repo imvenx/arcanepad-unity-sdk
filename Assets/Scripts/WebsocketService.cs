@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ArcanepadSDK.Models;
 
-public class WebSocketService<CustomEventNameType> : IWebSocketService
+public class WebSocketService<CustomEventNameType>
 {
     public delegate void EventCallback(Dictionary<string, object> data, string from);
     public delegate void GenericEventCallback<T>(T eventData, string from) where T : ArcaneBaseEvent;
