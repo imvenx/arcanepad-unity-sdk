@@ -1,0 +1,16 @@
+<linker>
+    <!-- 
+    This section preserves the Newtonsoft.Json assembly in its entirety.
+    
+    WHY IS THIS NECESSARY?
+    When building for WebGL, Unity tries to optimize the output by "stripping" unused code. However, 
+    there are instances where Unity might mistakenly remove essential parts of libraries.
+    
+    In our case, parts of the Newtonsoft.Json library were being removed, causing runtime errors.
+    To prevent this, we explicitly instruct Unity to preserve the entire Newtonsoft.Json library,
+    ensuring its functionality remains intact in the build.
+
+    Vera - September 2023 - :)
+    -->
+    <assembly fullname="Newtonsoft.Json" preserve="all"/>
+</linker>
