@@ -33,7 +33,7 @@ public class Arcane : MonoBehaviour
         DontDestroyOnLoad(this);
 
         string url = "wss://localhost:3005";
-#if DEBUG || UNITY_EDITOR
+#if DEBUG || UNITY_EDITOR || UNITY_STANDALONE
         url = "ws://localhost:3009";
 #endif
 
@@ -49,7 +49,7 @@ public class Arcane : MonoBehaviour
 
     void Update()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE 
         if (Msg != null)
         {
             Msg.Ws.DispatchMessageQueue();

@@ -9,8 +9,6 @@ using ArcanepadSDK.Models;
 public class WebSocketService<CustomEventNameType>
 {
     public delegate void EventCallback(Dictionary<string, object> data, string from);
-    public delegate void GenericEventCallback<T>(T eventData, string from) where T : ArcaneBaseEvent;
-
     public WebSocket Ws;
     private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
     private string Url { get; set; }
@@ -85,24 +83,36 @@ public class WebSocketService<CustomEventNameType>
 
         // if (closeCode == WebSocketCloseCode.Normal) return;
 #if !UNITY_EDITOR
-        await Task.Delay(reconnectionDelayMilliseconds); 
+        await Task.Delay(ReconnectionDelayMilliseconds); 
         Debug.Log($"Trying to reconnect..."); // TODO: DOES RECONNECT WORK?
-        await ws.Connect();
+        await Ws.Connect();
 #endif
     }
 
     private void OnMessage(byte[] message)
     {
-        string decodedMessage = System.Text.Encoding.UTF8.GetString(message);
-        ArcaneMessageFrom parsedEvent = JsonConvert.DeserializeObject<ArcaneMessageFrom>(decodedMessage);
-
-        if (eventHandlers.TryGetValue(parsedEvent.e["name"].ToString(), out List<EventCallback> handlers))
+        try
         {
-            var handlersCopy = new List<EventCallback>(handlers);
-            foreach (var handler in handlersCopy)
+            string decodedMessage = System.Text.Encoding.UTF8.GetString(message);
+            // Debug.Log("Decoded message: " + decodedMessage);
+
+            ArcaneMessageFrom parsedEvent = JsonConvert.DeserializeObject<ArcaneMessageFrom>(decodedMessage);
+
+            //  if (parsedEvent.e != null && parsedEvent.e.ContainsKey("name") &&
+            //      eventHandlers.TryGetValue(parsedEvent.e["name"].ToString(), out List<EventCallback> handlers))
+            if (eventHandlers.TryGetValue(parsedEvent.e["name"].ToString(), out List<EventCallback> handlers))
             {
-                handler(parsedEvent.e, parsedEvent.from);
+                var handlersCopy = new List<EventCallback>(handlers);
+                foreach (var handler in handlersCopy)
+                {
+                    // Debug.Log("Invoking handler: " + handler.Method.Name);
+                    handler(parsedEvent.e, parsedEvent.from);
+                }
             }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Exception thrown on onmessage" + JsonConvert.SerializeObject(e));
         }
 
     }
@@ -130,6 +140,7 @@ public class WebSocketService<CustomEventNameType>
 
     public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
+        Debug.Log("Registering handler" + eventName + callback);
         EventCallback eventCallback = (dataDict, from) =>
         {
             CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));
