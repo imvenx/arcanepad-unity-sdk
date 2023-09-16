@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
@@ -17,6 +18,8 @@ public class Arcane : MonoBehaviour
     public static List<string> IframePadsIds = new List<string>();
     public static ArcanePad Pad { get; private set; }
     public string LibraryVersion { get; } = "1.0.0";
+    [DllImport("__Internal")]
+    private static extern void SetFullScreen();
 
     [SerializeField]
     public ArcaneDeviceTypeEnum DeviceType;
@@ -30,6 +33,10 @@ public class Arcane : MonoBehaviour
 
     void Awake()
     {
+#if !UNITY_EDITOR && UNITY_WEBGL
+    SetFullScreen();
+#endif
+
         DontDestroyOnLoad(this);
 
         string url = "wss://localhost:3005";
