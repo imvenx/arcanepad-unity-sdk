@@ -95,12 +95,14 @@ namespace ArcanepadSDK.Models
         public string deviceId { get; set; }
         public string internalId { get; set; }
         public string iframeId { get; set; }
+        public ArcaneUser user { get; set; }
 
-        public IframePadConnectEvent(string clientId, string internalId, string deviceId) : base(AEventName.IframePadConnect)
+        public IframePadConnectEvent(string clientId, string internalId, string deviceId, ArcaneUser user) : base(AEventName.IframePadConnect)
         {
             iframeId = clientId;
             this.internalId = internalId;
             this.deviceId = deviceId;
+            this.user = user;
         }
     }
 
