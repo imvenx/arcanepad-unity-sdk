@@ -91,7 +91,7 @@ namespace ArcanepadSDK
 
         public void CalibrateQuaternion()
         {
-            Msg.Emit(new CalibrateQuaternion(), InternalIdList);
+            Msg.Emit(new CalibrateQuaternionEvent(), InternalIdList);
         }
         public void StartGetRotationEuler()
         {
@@ -127,7 +127,7 @@ namespace ArcanepadSDK
 
         public void CalibratePointer()
         {
-            Msg.Emit(new CalibratePointer(), InternalIdList);
+            Msg.Emit(new CalibratePointerEvent(), InternalIdList);
         }
 
         public void Vibrate(int millisecconds)

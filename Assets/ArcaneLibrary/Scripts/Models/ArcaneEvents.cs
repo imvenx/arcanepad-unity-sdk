@@ -134,7 +134,7 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class CalibrateQuaternion : ArcaneBaseEvent { public CalibrateQuaternion() : base(AEventName.CalibrateQuaternion) { } }
+    public class CalibrateQuaternionEvent : ArcaneBaseEvent { public CalibrateQuaternionEvent() : base(AEventName.CalibrateQuaternion) { } }
 
     public class StartGetRotationEulerEvent : ArcaneBaseEvent { public StartGetRotationEulerEvent() : base(AEventName.StartGetRotationEuler) { } }
     public class StopGetRotationEulerEvent : ArcaneBaseEvent { public StopGetRotationEulerEvent() : base(AEventName.StopGetRotationEuler) { } }
@@ -166,7 +166,7 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class CalibratePointer : ArcaneBaseEvent { public CalibratePointer() : base(AEventName.CalibratePointer) { } }
+    public class CalibratePointerEvent : ArcaneBaseEvent { public CalibratePointerEvent() : base(AEventName.CalibratePointer) { } }
 
     public class VibrateEvent : ArcaneBaseEvent
     {

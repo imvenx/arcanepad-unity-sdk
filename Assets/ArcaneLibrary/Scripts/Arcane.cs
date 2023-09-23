@@ -46,7 +46,7 @@ public class Arcane : MonoBehaviour
 
         Devices = new List<ArcaneDevice>();
         var deviceType = DeviceType == ArcaneDeviceTypeEnum.view ? ArcaneDeviceType.view : ArcaneDeviceType.pad;
-        Msg = new WebSocketService<string>(url, ArcaneDeviceType.view);
+        Msg = new WebSocketService<string>(url, deviceType);
 
         Action unsubscribeInit = null;
         unsubscribeInit = Msg.On(AEventName.Initialize, (InitializeEvent e, string from) => Initialize(e, unsubscribeInit));
