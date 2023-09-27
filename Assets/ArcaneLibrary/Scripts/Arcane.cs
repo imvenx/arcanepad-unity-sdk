@@ -5,12 +5,13 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
+using UnityEditor;
 using UnityEngine;
 
 public class Arcane : MonoBehaviour
 {
     public static WebSocketService<string> Msg;
-    public static IList<ArcaneDevice> Devices;
+    public static IList<ArcaneDevice> Devices = new List<ArcaneDevice>();
     public static List<ArcanePad> Pads = new List<ArcanePad>();
     private static List<string> InternalViewsIds = new List<string>();
     private static List<string> InternalPadsIds = new List<string>();
@@ -22,7 +23,14 @@ public class Arcane : MonoBehaviour
     private static extern void SetFullScreen();
 
     [SerializeField]
-    public ArcaneDeviceTypeEnum DeviceType;
+    private ArcaneDeviceTypeEnum DeviceType;
+    [SerializeField]
+    private string Port = "3005";
+    [SerializeField]
+    private string ReverseProxyPort = "3009";
+    [SerializeField]
+    private string ArcaneCode = "";
+
     private static TaskCompletionSource<InitialState> _arcaneClientInitialized = new TaskCompletionSource<InitialState>();
     // private static TaskCompletionSource<ArcaneClientInitializeEvent> _ArcaneClientInitialized = new TaskCompletionSource<ArcaneClientInitializeEvent>();
 
@@ -39,14 +47,15 @@ public class Arcane : MonoBehaviour
 
         DontDestroyOnLoad(this);
 
-        string url = "wss://localhost:3005";
-#if DEBUG || UNITY_EDITOR || UNITY_STANDALONE
-        url = "ws://localhost:3009";
-#endif
+        // string url = "wss://localhost:3005";
+        // #if DEBUG || UNITY_EDITOR || UNITY_STANDALONE
+        // url = "ws://localhost:3009";
+        // #endif
 
-        Devices = new List<ArcaneDevice>();
         var deviceType = DeviceType == ArcaneDeviceTypeEnum.view ? ArcaneDeviceType.view : ArcaneDeviceType.pad;
-        Msg = new WebSocketService<string>(url, deviceType);
+        var arcaneInitParams = new ArcaneInitParams(deviceType, Port, ReverseProxyPort, ArcaneCode);
+
+        Msg = new WebSocketService<string>(arcaneInitParams);
 
         Action unsubscribeInit = null;
         unsubscribeInit = Msg.On(AEventName.Initialize, (InitializeEvent e, string from) => Initialize(e, unsubscribeInit));
@@ -57,7 +66,7 @@ public class Arcane : MonoBehaviour
     void Update()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE 
-        if (Msg != null)
+        if (Msg != null && Msg.Ws != null)
         {
             Msg.Ws.DispatchMessageQueue();
         }

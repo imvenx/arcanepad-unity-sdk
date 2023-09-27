@@ -5,6 +5,7 @@ using NativeWebSocket;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ArcanepadSDK.Models;
+using ArcanepadSDK.AUtils;
 
 public class WebSocketService<CustomEventNameType>
 {
@@ -12,31 +13,32 @@ public class WebSocketService<CustomEventNameType>
     public WebSocket Ws;
     private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
     private string Url { get; set; }
-    private const int ReconnectionDelayMilliseconds = 1000;
+    private const int ReconnectionDelayMilliseconds = 1000; // It lint's as unused but is being used in an #if
     private string DeviceType { get; set; }
     public string ClientId { get; private set; }
     public string DeviceId { get; private set; }
+    private ArcaneInitParams arcaneInitParams { get; set; }
+    public string Protocol { get; private set; }
+    public string Host { get; private set; }
+    private ArcaneClientInitData ClientInitData { get; set; }
 
-    // public event Action OnConnected;
-    // public event Action OnInitialized;
-
-    public WebSocketService(string url, string deviceType)
+    public WebSocketService(ArcaneInitParams arcaneInitParams)
     {
-        Url = url;
-        DeviceType = deviceType;
+        // Url = arcaneInitParamsurl;
+        // DeviceType = arcaneInitParamsdeviceType;
+        this.arcaneInitParams = arcaneInitParams;
         InitWebSocket();
     }
 
     private async void InitWebSocket()
     {
-        var clientInitData = new ArcaneClientInitData
-        {
-            clientType = "external",
-            deviceId = "unity-dev",
-            deviceType = DeviceType
-        };
+#if DEBUG || UNITY_EDITOR || UNITY_STANDALONE
+        InitAsExternalClient();
+#else
+        InitAsIframeClent();
+#endif
 
-        string clientInitDataStr = JsonConvert.SerializeObject(clientInitData);
+        string clientInitDataStr = JsonConvert.SerializeObject(ClientInitData);
 
         Url = Url + "?clientInitData=" + clientInitDataStr;
         Ws = new WebSocket(Url);
@@ -46,24 +48,56 @@ public class WebSocketService<CustomEventNameType>
         Ws.OnClose += OnClose;
         Ws.OnMessage += OnMessage;
 
-        On(AEventName.Initialize, (InitializeEvent e, string from) =>
-        {
-            if (string.IsNullOrEmpty(e.assignedClientId))
-            {
-                Debug.LogError("Missing clientId on initialize");
-                return;
-            }
-            if (string.IsNullOrEmpty(e.assignedDeviceId))
-            {
-                Debug.LogError("Missing deviceOd on initialize");
-                return;
-            }
-            ClientId = e.assignedClientId;
-            DeviceId = e.assignedDeviceId;
-            Debug.Log("Client initialized with clientId: " + ClientId + " and deviceId: " + DeviceId);
-        });
+
+        On(AEventName.Initialize, (InitializeEvent e, string from) => OnInitialize(e, from));
 
         await Ws.Connect();
+    }
+
+    private void InitAsExternalClient()
+    {
+        if (string.IsNullOrEmpty(arcaneInitParams.arcaneCode))
+        {
+            var errMsg = "Arcane Error: Need to specify ArcaneCode on the Arcane component inspector view. To get the arcane code go to ArcanePad App, it should be displayed on top or on connect option.";
+            Debug.LogError(errMsg);
+            throw new Exception("Thrown Exception: " + errMsg);
+        }
+
+        Protocol = "ws";
+        Host = "192.168." + arcaneInitParams.arcaneCode;
+        DeviceType = arcaneInitParams.deviceType;
+        Url = Protocol + "://" + Host + ":" + arcaneInitParams.reverseProxyPort;
+
+        ClientInitData = new ArcaneClientInitData
+        {
+            clientType = "external",
+            deviceType = DeviceType
+        };
+
+    }
+
+    private void InitAsIframeClent()
+    {
+        var queryParams = AUtils.GetQueryParams();
+        Debug.Log(queryParams);
+        // DeviceId = queryParams["deviceId"];
+    }
+
+    private void OnInitialize(InitializeEvent e, string from)
+    {
+        if (string.IsNullOrEmpty(e.assignedClientId))
+        {
+            Debug.LogError("Missing clientId on initialize");
+            return;
+        }
+        if (string.IsNullOrEmpty(e.assignedDeviceId))
+        {
+            Debug.LogError("Missing deviceOd on initialize");
+            return;
+        }
+        ClientId = e.assignedClientId;
+        DeviceId = e.assignedDeviceId;
+        Debug.Log("Client initialized with clientId: " + ClientId + " and deviceId: " + DeviceId);
     }
 
     private void OnOpen()
