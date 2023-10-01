@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.AUtils;
+using System.Linq;
 
 public class WebSocketService<CustomEventNameType>
 {
@@ -14,7 +15,7 @@ public class WebSocketService<CustomEventNameType>
     private Dictionary<string, List<EventCallback>> eventHandlers = new Dictionary<string, List<EventCallback>>();
     private string Url { get; set; }
     private const int ReconnectionDelayMilliseconds = 1000; // It lint's as unused but is being used in an #if
-    private string DeviceType { get; set; }
+    public string DeviceType { get; set; }
     public string ClientId { get; private set; }
     public string DeviceId { get; private set; }
     private ArcaneInitParams arcaneInitParams { get; set; }
@@ -32,14 +33,25 @@ public class WebSocketService<CustomEventNameType>
 
     private async void InitWebSocket()
     {
-#if DEBUG || UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_EDITOR || UNITY_STANDALONE
         InitAsExternalClient();
 #else
         InitAsIframeClent();
 #endif
 
-        string clientInitDataStr = JsonConvert.SerializeObject(ClientInitData);
+        if (ClientInitData == null)
+        {
+            Debug.LogError("ArcaneError: ClientInitData is null on InitializeWebSocket");
+            return;
+        }
 
+        if (string.IsNullOrEmpty(Url))
+        {
+            Debug.LogError("ArcaneError: Url is null or empty on InitializeWebSocket");
+            return;
+        }
+
+        string clientInitDataStr = JsonConvert.SerializeObject(ClientInitData);
         Url = Url + "?clientInitData=" + clientInitDataStr;
         Ws = new WebSocket(Url);
 
@@ -48,14 +60,15 @@ public class WebSocketService<CustomEventNameType>
         Ws.OnClose += OnClose;
         Ws.OnMessage += OnMessage;
 
-
-        On(AEventName.Initialize, (InitializeEvent e, string from) => OnInitialize(e, from));
+        On(AEventName.Initialize, (InitializeEvent e, string from) => OnInitialize(e));
 
         await Ws.Connect();
     }
 
     private void InitAsExternalClient()
     {
+        Debug.Log("Initializing Unity Client as External");
+
         if (string.IsNullOrEmpty(arcaneInitParams.arcaneCode))
         {
             var errMsg = "Arcane Error: Need to specify ArcaneCode on the Arcane component inspector view. To get the arcane code go to ArcanePad App, it should be displayed on top or on connect option.";
@@ -70,34 +83,68 @@ public class WebSocketService<CustomEventNameType>
 
         ClientInitData = new ArcaneClientInitData
         {
-            clientType = "external",
+            clientType = ArcaneClientType.external,
             deviceType = DeviceType
         };
-
     }
 
     private void InitAsIframeClent()
     {
+        Debug.Log("Initializing Unity Client as Iframe");
+
+        var isWebEnv = Application.platform == RuntimePlatform.WebGLPlayer;
+
+        if (!isWebEnv)
+        {
+            Debug.LogError("Trying to initialize as Iframe but isWebEnv is false");
+            throw new Exception("Trying to initialize as Iframe but isWebEnv is false");
+        }
+
+        if (!AUtils.IsIframe())
+        {
+            Debug.LogError("Trying to initialize as Iframe but isIframe is false");
+            throw new Exception("Trying to initialize as Iframe but isIframe is false");
+        }
+
         var queryParams = AUtils.GetQueryParams();
-        Debug.Log(queryParams);
-        // DeviceId = queryParams["deviceId"];
+        DeviceId = queryParams["deviceId"];
+        if (string.IsNullOrEmpty(DeviceId))
+        {
+            Debug.LogError("DeviceId is null or empty on InitAsIframeClient");
+            throw new Exception("DeviceId is null or empty on InitAsIframeClient");
+        }
+
+        ClientInitData = new ArcaneClientInitData
+        {
+            clientType = ArcaneClientType.iframe,
+            deviceId = DeviceId
+        };
+
+        Host = AUtils.GetHost();
+        Protocol = "wss";
+        Url = Protocol + "://" + Host + ":" + arcaneInitParams.port;
     }
 
-    private void OnInitialize(InitializeEvent e, string from)
+    public void OnInitialize(InitializeEvent e)
     {
         if (string.IsNullOrEmpty(e.assignedClientId))
         {
             Debug.LogError("Missing clientId on initialize");
             return;
         }
+
         if (string.IsNullOrEmpty(e.assignedDeviceId))
         {
             Debug.LogError("Missing deviceOd on initialize");
             return;
         }
+
         ClientId = e.assignedClientId;
         DeviceId = e.assignedDeviceId;
-        Debug.Log("Client initialized with clientId: " + ClientId + " and deviceId: " + DeviceId);
+
+        DeviceType = Arcane.Devices.FirstOrDefault(d => d.id == DeviceId).deviceType;
+
+        Debug.Log("Client initialized. ClientId: " + ClientId + " DeviceId: " + DeviceId + " DeviceType: " + DeviceType);
     }
 
     private void OnOpen()
@@ -174,7 +221,7 @@ public class WebSocketService<CustomEventNameType>
 
     public Action On<CustomEventType>(string eventName, Action<CustomEventType, string> callback) where CustomEventType : ArcaneBaseEvent
     {
-        Debug.Log("Registering handler" + eventName + callback);
+        // Debug.Log("Registering handler" + eventName + callback);
         EventCallback eventCallback = (dataDict, from) =>
         {
             CustomEventType eventData = JsonConvert.DeserializeObject<CustomEventType>(JsonConvert.SerializeObject(dataDict));

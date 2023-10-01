@@ -85,6 +85,8 @@ public class Arcane : MonoBehaviour
 
     private void Initialize(InitializeEvent e, Action unsubscribeInit)
     {
+        unsubscribeInit();
+
         RefreshGlobalState(e.globalState);
 
         // if (DeviceType == ArcaneDeviceTypeEnum.pad)
@@ -96,7 +98,7 @@ public class Arcane : MonoBehaviour
 
         _arcaneClientInitialized.SetResult(initialState);
 
-        unsubscribeInit();
+        // Msg.OnInitialize(e);
     }
 
     private void RefreshGlobalState(GlobalState globalState)

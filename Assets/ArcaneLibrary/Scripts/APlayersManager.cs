@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ArcanepadSDK.Models;
 using ArcanepadSDK;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -10,9 +12,17 @@ public class PlayerManager : MonoBehaviour
     public List<PlayerController> players = new List<PlayerController>();
     public bool gameStarted { get; private set; }
     public static bool isGamePaused = false;
+    public TextMeshProUGUI deviceTypeText;
     async void Start()
     {
         var initialState = await Arcane.ArcaneClientInitialized();
+
+        deviceTypeText.text = Arcane.Msg.DeviceType;
+
+        if (Arcane.Msg.DeviceType == ArcaneDeviceType.pad)
+        {
+            SceneManager.LoadScene("PadScene");
+        }
 
         initialState.pads.ForEach(pad =>
         {
