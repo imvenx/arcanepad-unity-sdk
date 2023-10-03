@@ -111,17 +111,17 @@ public class ArcaneInitParams
     public string deviceType;
     public string port;
     public string reverseProxyPort;
-    public string arcaneCode;
+    // public string arcaneCode;
     public ArcaneInitParams(
         string deviceType = "view",
         string port = "3005",
-        string reverseProxyPort = "3009",
-        string arcaneCode = ""
+        string reverseProxyPort = "3009"
+    // string arcaneCode = ""
     )
     {
         this.deviceType = deviceType;
         this.port = port;
         this.reverseProxyPort = reverseProxyPort;
-        this.arcaneCode = arcaneCode;
+        // this.arcaneCode = arcaneCode;
     }
 }

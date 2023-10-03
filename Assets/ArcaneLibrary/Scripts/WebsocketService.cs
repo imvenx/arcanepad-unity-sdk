@@ -69,15 +69,16 @@ public class WebSocketService<CustomEventNameType>
     {
         Debug.Log("Initializing Unity Client as External");
 
-        if (string.IsNullOrEmpty(arcaneInitParams.arcaneCode))
-        {
-            var errMsg = "Arcane Error: Need to specify ArcaneCode on the Arcane component inspector view. To get the arcane code go to ArcanePad App, it should be displayed on top or on connect option.";
-            Debug.LogError(errMsg);
-            throw new Exception("Thrown Exception: " + errMsg);
-        }
+        // if (string.IsNullOrEmpty(arcaneInitParams.arcaneCode))
+        // {
+        //     var errMsg = "Arcane Error: Need to specify ArcaneCode on the Arcane component inspector view. To get the arcane code go to ArcanePad App, it should be displayed on top or on connect option.";
+        //     Debug.LogError(errMsg);
+        //     throw new Exception("Thrown Exception: " + errMsg);
+        // }
 
         Protocol = "ws";
-        Host = "192.168." + arcaneInitParams.arcaneCode;
+        // Host = "192.168." + arcaneInitParams.arcaneCode;
+        Host = "127.0.0.1";
         DeviceType = arcaneInitParams.deviceType;
         Url = Protocol + "://" + Host + ":" + arcaneInitParams.reverseProxyPort;
 

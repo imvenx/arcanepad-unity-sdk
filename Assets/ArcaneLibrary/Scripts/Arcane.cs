@@ -28,8 +28,8 @@ public class Arcane : MonoBehaviour
     private string Port = "3005";
     [SerializeField]
     private string ReverseProxyPort = "3009";
-    [SerializeField]
-    private string ArcaneCode = "";
+    // [SerializeField]
+    // private string ArcaneCode = "";
 
     private static TaskCompletionSource<InitialState> _arcaneClientInitialized = new TaskCompletionSource<InitialState>();
     // private static TaskCompletionSource<ArcaneClientInitializeEvent> _ArcaneClientInitialized = new TaskCompletionSource<ArcaneClientInitializeEvent>();
@@ -53,7 +53,7 @@ public class Arcane : MonoBehaviour
         // #endif
 
         var deviceType = DeviceType == ArcaneDeviceTypeEnum.view ? ArcaneDeviceType.view : ArcaneDeviceType.pad;
-        var arcaneInitParams = new ArcaneInitParams(deviceType, Port, ReverseProxyPort, ArcaneCode);
+        var arcaneInitParams = new ArcaneInitParams(deviceType, Port, ReverseProxyPort);
 
         Msg = new WebSocketService<string>(arcaneInitParams);
 
