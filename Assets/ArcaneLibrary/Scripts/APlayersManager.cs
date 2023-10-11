@@ -5,6 +5,7 @@ using ArcanepadSDK.Models;
 using ArcanepadSDK;
 using TMPro;
 using UnityEngine.SceneManagement;
+using ArcanepadSDK.Types;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class PlayerManager : MonoBehaviour
     public TextMeshProUGUI deviceTypeText;
     async void Start()
     {
+        Arcane.Init();
+
         var initialState = await Arcane.ArcaneClientInitialized();
 
         deviceTypeText.text = Arcane.Msg.DeviceType;

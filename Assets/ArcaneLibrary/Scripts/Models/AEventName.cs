@@ -45,6 +45,9 @@ namespace ArcanepadSDK.Models
         public static string GetPointer = "GetPointer";
         public static string CalibratePointer = "CalibratePointer";
 
+        public static string SetScreenOrientationPortrait = "_SetScreenOrientationPortrait";
+        public static string SetScreenOrientationLandscape = "_SetScreenOrientationLandscape";
+
         public static string Vibrate = "Vibrate";
 
         public static string UpdateUser = "UpdateUser";

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
+using ArcanepadSDK.Types;
 using UnityEngine;
 
 namespace ArcanepadSDK.Models
@@ -18,12 +19,7 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class ArcaneClientType
-    {
-        public static string @internal = "internal";
-        public static string iframe = "iframe";
-        public static string external = "external";
-    }
+
 
     public class ArcaneDevice
     {
@@ -31,18 +27,6 @@ namespace ArcanepadSDK.Models
         public IList<ArcaneClient> clients { get; set; }
         public string deviceType { get; set; }
         public ArcaneUser user { get; set; } = null;
-    }
-
-    public class ArcaneDeviceType
-    {
-        public static readonly string pad = "pad";
-        public static readonly string view = "view";
-        public static readonly string none = "none";
-    }
-
-    public enum ArcaneDeviceTypeEnum
-    {
-        view, pad
     }
 
     public class ArcaneClientInitData
@@ -105,23 +89,25 @@ public class ArcaneUser
     }
 }
 
-
 public class ArcaneInitParams
 {
     public string deviceType;
     public string port;
     public string reverseProxyPort;
-    // public string arcaneCode;
+    public AOrientation padOrientation;
+    public bool hideMouse;
     public ArcaneInitParams(
         string deviceType = "view",
         string port = "3005",
-        string reverseProxyPort = "3009"
-    // string arcaneCode = ""
+        string reverseProxyPort = "3009",
+        AOrientation padOrientation = AOrientation.Landscape,
+        bool hideMouse = true
     )
     {
         this.deviceType = deviceType;
         this.port = port;
         this.reverseProxyPort = reverseProxyPort;
-        // this.arcaneCode = arcaneCode;
+        this.padOrientation = padOrientation;
+        this.hideMouse = hideMouse;
     }
 }

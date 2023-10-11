@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.AUtils;
 using System.Linq;
+using ArcanepadSDK.Types;
 
 public class WebSocketService<CustomEventNameType>
 {
@@ -18,7 +19,7 @@ public class WebSocketService<CustomEventNameType>
     public string DeviceType { get; set; }
     public string ClientId { get; private set; }
     public string DeviceId { get; private set; }
-    private ArcaneInitParams arcaneInitParams { get; set; }
+    private ArcaneInitParams _arcaneInitParams { get; set; }
     public string Protocol { get; private set; }
     public string Host { get; private set; }
     private ArcaneClientInitData ClientInitData { get; set; }
@@ -27,7 +28,7 @@ public class WebSocketService<CustomEventNameType>
     {
         // Url = arcaneInitParamsurl;
         // DeviceType = arcaneInitParamsdeviceType;
-        this.arcaneInitParams = arcaneInitParams;
+        _arcaneInitParams = arcaneInitParams;
         InitWebSocket();
     }
 
@@ -79,8 +80,8 @@ public class WebSocketService<CustomEventNameType>
         Protocol = "ws";
         // Host = "192.168." + arcaneInitParams.arcaneCode;
         Host = "127.0.0.1";
-        DeviceType = arcaneInitParams.deviceType;
-        Url = Protocol + "://" + Host + ":" + arcaneInitParams.reverseProxyPort;
+        DeviceType = _arcaneInitParams.deviceType;
+        Url = Protocol + "://" + Host + ":" + _arcaneInitParams.reverseProxyPort;
 
         ClientInitData = new ArcaneClientInitData
         {
@@ -123,7 +124,7 @@ public class WebSocketService<CustomEventNameType>
 
         Host = AUtils.GetHost();
         Protocol = "wss";
-        Url = Protocol + "://" + Host + ":" + arcaneInitParams.port;
+        Url = Protocol + "://" + Host + ":" + _arcaneInitParams.port;
     }
 
     public void OnInitialize(InitializeEvent e)

@@ -125,10 +125,13 @@ namespace ArcanepadSDK
             Events.On($"{AEventName.GetPointer}_{InternalId}", callback);
         }
 
-        public void CalibratePointer()
+        public void CalibratePointer(bool isTopLeft)
         {
-            Msg.Emit(new CalibratePointerEvent(), InternalIdList);
+            Msg.Emit(new CalibratePointerEvent(isTopLeft), InternalIdList);
         }
+
+        public void SetScreenOrientationPortrait() { Msg.Emit(new SetScreenOrientationPortraitEvent(), InternalIdList); }
+        public void SetScreenOrientationLandscape() { Msg.Emit(new SetScreenOrientationLandscapeEvent(), InternalIdList); }
 
         public void Vibrate(int millisecconds)
         {

@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using ArcanepadSDK.Types;
 
 namespace ArcanepadSDK.Models
 {
@@ -82,8 +83,8 @@ namespace ArcanepadSDK.Models
     public class ClientDisconnectEvent : ArcaneBaseEvent
     {
         public string clientId;
-        public ArcaneClientType clientType;
-        public ClientDisconnectEvent(string clientId, ArcaneClientType clientType) : base(AEventName.ClientDisconnect)
+        public string clientType;
+        public ClientDisconnectEvent(string clientId, string clientType) : base(AEventName.ClientDisconnect)
         {
             this.clientId = clientId;
             this.clientType = clientType;
@@ -168,7 +169,17 @@ namespace ArcanepadSDK.Models
         }
     }
 
-    public class CalibratePointerEvent : ArcaneBaseEvent { public CalibratePointerEvent() : base(AEventName.CalibratePointer) { } }
+    public class CalibratePointerEvent : ArcaneBaseEvent
+    {
+        bool isTopLeft;
+        public CalibratePointerEvent(bool isTopLeft) : base(AEventName.CalibratePointer)
+        {
+            this.isTopLeft = isTopLeft;
+        }
+    }
+
+    public class SetScreenOrientationPortraitEvent : ArcaneBaseEvent { public SetScreenOrientationPortraitEvent() : base(AEventName.SetScreenOrientationPortrait) { } }
+    public class SetScreenOrientationLandscapeEvent : ArcaneBaseEvent { public SetScreenOrientationLandscapeEvent() : base(AEventName.SetScreenOrientationLandscape) { } }
 
     public class VibrateEvent : ArcaneBaseEvent
     {

@@ -36,12 +36,11 @@ public class PlayerController : MonoBehaviour
             transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
         });
 
-        // Pad.StartGetPointer();
-        // Pad.OnGetPointer((e) =>
-        // {
-        //     Debug.Log(e.x);
-        //     Debug.Log(e.y);
-        // });
+        Pad.StartGetPointer();
+        pad.OnGetPointer((GetPointerEvent e) =>
+        {
+            Debug.Log(e.x + " | " + e.y);
+        });
 
         Debug.Log(Pad.User.name);
 
