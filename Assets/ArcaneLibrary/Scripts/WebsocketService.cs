@@ -17,6 +17,8 @@ public class WebSocketService<CustomEventNameType>
     private string Url { get; set; }
     private const int ReconnectionDelayMilliseconds = 1000; // It lint's as unused but is being used in an #if
     public string DeviceType { get; set; }
+    public string ClientType { get; set; }
+
     public string ClientId { get; private set; }
     public string DeviceId { get; private set; }
     private ArcaneInitParams _arcaneInitParams { get; set; }
@@ -83,9 +85,10 @@ public class WebSocketService<CustomEventNameType>
         DeviceType = _arcaneInitParams.deviceType;
         Url = Protocol + "://" + Host + ":" + _arcaneInitParams.reverseProxyPort;
 
+        ClientType = ArcaneClientType.external;
         ClientInitData = new ArcaneClientInitData
         {
-            clientType = ArcaneClientType.external,
+            clientType = ClientType,
             deviceType = DeviceType
         };
     }
@@ -116,9 +119,10 @@ public class WebSocketService<CustomEventNameType>
             throw new Exception("DeviceId is null or empty on InitAsIframeClient");
         }
 
+        ClientType = ArcaneClientType.iframe;
         ClientInitData = new ArcaneClientInitData
         {
-            clientType = ArcaneClientType.iframe,
+            clientType = ClientType,
             deviceId = DeviceId
         };
 

@@ -102,7 +102,7 @@ public class Arcane : MonoBehaviour
 
         var deviceType = Devices.FirstOrDefault(d => d.id == Msg.DeviceId).deviceType;
 
-        if (deviceType == ArcaneDeviceType.pad) PadInitialization();
+        if (deviceType == ArcaneDeviceType.pad && Msg.ClientType == ArcaneClientType.iframe) PadInitialization();
         if (deviceType == ArcaneDeviceType.view) ViewInitialization();
 
         var initialState = new InitialState(Pads);
