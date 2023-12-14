@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/ArcaneLibrary/Scenes/ViewScene.unity
+    path: Assets/ArcaneLibrary/Example/Scenes/ViewScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/ArcaneLibrary/Scenes/PadScene.unity
+    path: Assets/ArcaneLibrary/Example/Scenes/PadScene.unity
     guid: a003de32cd65ded43960dbcf30817cdc
   m_configObjects: {}
