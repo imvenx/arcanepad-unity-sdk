@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ArcanepadSDK;
-using ArcanepadSDK.AUtils;
 using ArcanepadSDK.Models;
 using ArcanepadSDK.Types;
 using UnityEditor;
@@ -102,7 +101,7 @@ public class Arcane : MonoBehaviour
 
         var deviceType = Devices.FirstOrDefault(d => d.id == Msg.DeviceId).deviceType;
 
-        if (deviceType == ArcaneDeviceType.pad && Msg.ClientType == ArcaneClientType.iframe) PadInitialization();
+        if (deviceType == ArcaneDeviceType.pad) PadInitialization();
         if (deviceType == ArcaneDeviceType.view) ViewInitialization();
 
         var initialState = new InitialState(Pads);
@@ -144,22 +143,22 @@ public class Arcane : MonoBehaviour
     {
         var pads = new List<ArcanePad>();
 
-        var padDevices = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad && device.clients.Any(c => c.clientType == ArcaneClientType.iframe)).ToList();
+        var padDevices = _devices.Where(device => device.deviceType == ArcaneDeviceType.pad).ToList();
 
         padDevices.ForEach(padDevice =>
         {
             var iframeClientId = padDevice.clients.FirstOrDefault(c => c.clientType == ArcaneClientType.iframe)?.id;
             var internalClientId = padDevice.clients.FirstOrDefault(c => c.clientType == ArcaneClientType.@internal)?.id;
 
-            if (string.IsNullOrEmpty(iframeClientId))
-            {
-                Debug.LogError("Tried to set pad but iframeClientId was not found");
-            }
+            // if (string.IsNullOrEmpty(iframeClientId))
+            // {
+            //     Debug.LogError("Tried to set pad but iframeClientId was not found");
+            // }
 
-            if (string.IsNullOrEmpty(internalClientId))
-            {
-                Debug.LogError("Tried to set pad but internalClientId was not found");
-            }
+            // if (string.IsNullOrEmpty(internalClientId))
+            // {
+            //     Debug.LogError("Tried to set pad but internalClientId was not found");
+            // }
 
             pads.Add(new ArcanePad(
                 deviceId: padDevice.id,
