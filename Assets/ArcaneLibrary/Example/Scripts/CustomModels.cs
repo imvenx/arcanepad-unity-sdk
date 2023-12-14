@@ -1,18 +1,18 @@
 
 using ArcanepadSDK.Models;
 
-namespace ArcanepadSDK.ACustomModels
+namespace ArcanepadExample
 {
     public class AttackEvent : ArcaneBaseEvent
     {
         public int damage;
-        public AttackEvent(int damage) : base(ACustomEventNames.Attack)
+        public AttackEvent(int damage) : base(CustomEventNames.Attack)
         {
             this.damage = damage;
         }
     }
 
-    public class ACustomEventNames
+    public class CustomEventNames
     {
         public static string Attack = "Attack";
     }
