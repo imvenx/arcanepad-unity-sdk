@@ -14,7 +14,7 @@ public class AViewManager : MonoBehaviour
     public bool gameStarted { get; private set; }
     public static bool isGamePaused = false;
     public TextMeshProUGUI deviceTypeText;
-    async void Start()
+    async void Awake()
     {
         Arcane.Init();
 
