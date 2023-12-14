@@ -11,7 +11,7 @@ using UnityEngine;
 
 public class Arcane : MonoBehaviour
 {
-    public static WebSocketService<string> Msg;
+    public static AWebSocketService<string> Msg;
     public static IList<ArcaneDevice> Devices = new List<ArcaneDevice>();
     public static List<ArcanePad> Pads = new List<ArcanePad>();
     private static List<string> InternalViewsIds = new List<string>();
@@ -19,7 +19,7 @@ public class Arcane : MonoBehaviour
     public static List<string> IframeViewsIds = new List<string>();
     public static List<string> IframePadsIds = new List<string>();
     public static ArcanePad Pad { get; private set; }
-    public string LibraryVersion { get; } = "1.1.0";
+    public string LibraryVersion { get; } = "1.1.1";
     [DllImport("__Internal")]
     private static extern void SetFullScreen();
 
@@ -65,7 +65,7 @@ public class Arcane : MonoBehaviour
         var deviceType = DeviceType == ArcaneDeviceTypeEnum.view ? ArcaneDeviceType.view : ArcaneDeviceType.pad;
         // var arcaneInitParams = new ArcaneInitParams(deviceType, Port, ReverseProxyPort);
 
-        Msg = new WebSocketService<string>(arcaneInitParams);
+        Msg = new AWebSocketService<string>(arcaneInitParams);
 
         Action unsubscribeInit = null;
         unsubscribeInit = Msg.On(AEventName.Initialize, (InitializeEvent e, string from) => Initialize(e, unsubscribeInit));

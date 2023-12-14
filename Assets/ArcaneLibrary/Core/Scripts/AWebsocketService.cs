@@ -9,7 +9,7 @@ using ArcanepadSDK.AUtils;
 using System.Linq;
 using ArcanepadSDK.Types;
 
-public class WebSocketService<CustomEventNameType>
+public class AWebSocketService<CustomEventNameType>
 {
     public delegate void EventCallback(Dictionary<string, object> data, string from);
     public WebSocket Ws;
@@ -26,7 +26,7 @@ public class WebSocketService<CustomEventNameType>
     public string Host { get; private set; }
     private ArcaneClientInitData ClientInitData { get; set; }
 
-    public WebSocketService(ArcaneInitParams arcaneInitParams)
+    public AWebSocketService(ArcaneInitParams arcaneInitParams)
     {
         // Url = arcaneInitParamsurl;
         // DeviceType = arcaneInitParamsdeviceType;

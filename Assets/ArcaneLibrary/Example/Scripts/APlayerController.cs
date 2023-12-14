@@ -1,6 +1,6 @@
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
-using ArcanepadSDK.PadEvents;
+using ArcanepadSDK.APadEvents;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -9,20 +9,20 @@ public class PlayerController : MonoBehaviour
     public void Initialize(ArcanePad pad)
     {
         Pad = pad;
-        Pad.On(AEventName.Left, (LeftEvent e) =>
+        Pad.On(AEventName.Left, (ALeftEvent e) =>
        {
            transform.Translate(Vector3.left);
            Pad.Vibrate(200);
        });
-        Pad.On(AEventName.Right, (RightEvent e) =>
+        Pad.On(AEventName.Right, (ARightEvent e) =>
         {
             transform.Translate(Vector3.right);
         });
-        Pad.On(AEventName.Up, (UpEvent e) =>
+        Pad.On(AEventName.Up, (AUpEvent e) =>
         {
             transform.Translate(Vector3.up);
         });
-        Pad.On(AEventName.Down, (DownEvent e) =>
+        Pad.On(AEventName.Down, (ADownEvent e) =>
         {
             transform.Translate(Vector3.down);
         });
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
         Pad.StartGetQuaternion();
         Pad.OnGetQuaternion((GetQuaternionEvent e) =>
         {
-            if (PlayerManager.isGamePaused) return;
+            if (AViewManager.isGamePaused) return;
             transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
         });
 

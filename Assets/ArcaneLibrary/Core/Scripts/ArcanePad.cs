@@ -16,7 +16,7 @@ namespace ArcanepadSDK
         private List<string> IframeIdList { get; }
         public bool IsConnected { get; private set; }
         private ArcaneEventEmitter Events = new ArcaneEventEmitter();
-        private WebSocketService<string> Msg;
+        private AWebSocketService<string> Msg;
 
         public ArcanePad(string deviceId, string internalId, string iframeId, bool isConnected, ArcaneUser user = null)
         {

@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using ArcanepadSDK.Types;
 
-public class PlayerManager : MonoBehaviour
+public class AViewManager : MonoBehaviour
 {
     public GameObject playerPrefab;
     public List<PlayerController> players = new List<PlayerController>();

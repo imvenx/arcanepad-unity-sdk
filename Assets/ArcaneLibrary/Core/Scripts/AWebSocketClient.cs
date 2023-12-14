@@ -5,7 +5,7 @@ using System.Threading;
 using System.Text;
 using UnityEngine;
 
-public class WebSocketClient : MonoBehaviour
+public class AWebSocketClient : MonoBehaviour
 {
     // private ClientWebSocket client = new ClientWebSocket();
 
