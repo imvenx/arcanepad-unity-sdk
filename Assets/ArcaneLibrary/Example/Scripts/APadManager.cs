@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ArcanepadExample
 {
-    public class PadManager : MonoBehaviour
+    public class APadManager : MonoBehaviour
     {
         async void Awake()
         {

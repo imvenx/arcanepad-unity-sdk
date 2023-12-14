@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ArcanepadExample
 {
-    public class PlayerController : MonoBehaviour
+    public class APlayerController : MonoBehaviour
     {
         public ArcanePad Pad { get; private set; }
         public void Initialize(ArcanePad pad)
@@ -33,7 +33,7 @@ namespace ArcanepadExample
             Pad.StartGetQuaternion();
             Pad.OnGetQuaternion((GetQuaternionEvent e) =>
             {
-                if (ViewManager.isGamePaused) return;
+                if (AViewManager.isGamePaused) return;
                 transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
             });
 

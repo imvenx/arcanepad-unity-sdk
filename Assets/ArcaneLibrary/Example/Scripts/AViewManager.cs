@@ -9,10 +9,10 @@ using ArcanepadSDK.Types;
 
 namespace ArcanepadExample
 {
-    public class ViewManager : MonoBehaviour
+    public class AViewManager : MonoBehaviour
     {
         public GameObject playerPrefab;
-        public List<PlayerController> players = new List<PlayerController>();
+        public List<APlayerController> players = new List<APlayerController>();
         public bool gameStarted { get; private set; }
         public static bool isGamePaused = false;
         public TextMeshProUGUI deviceTypeText;
@@ -66,13 +66,13 @@ namespace ArcanepadExample
         void createPlayer(ArcanePad pad)
         {
             GameObject newPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-            PlayerController playerComponent = newPlayer.GetComponent<PlayerController>();
+            APlayerController playerComponent = newPlayer.GetComponent<APlayerController>();
             playerComponent.Initialize(pad);
 
             players.Add(playerComponent);
         }
 
-        void destroyPlayer(PlayerController playerComponent)
+        void destroyPlayer(APlayerController playerComponent)
         {
             playerComponent.Pad.Dispose();
             players.Remove(playerComponent);
