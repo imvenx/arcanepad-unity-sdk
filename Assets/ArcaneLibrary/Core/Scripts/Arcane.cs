@@ -19,7 +19,7 @@ public class Arcane : MonoBehaviour
     public static List<string> IframeViewsIds = new List<string>();
     public static List<string> IframePadsIds = new List<string>();
     public static ArcanePad Pad { get; private set; }
-    public string LibraryVersion { get; } = "1.1.3";
+    public string LibraryVersion { get; } = "1.4.0";
     [DllImport("__Internal")]
     private static extern void SetFullScreen();
 

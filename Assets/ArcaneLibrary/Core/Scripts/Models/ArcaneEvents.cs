@@ -171,7 +171,7 @@ namespace ArcanepadSDK.Models
 
     public class CalibratePointerEvent : ArcaneBaseEvent
     {
-        bool isTopLeft;
+        public bool isTopLeft;
         public CalibratePointerEvent(bool isTopLeft) : base(AEventName.CalibratePointer)
         {
             this.isTopLeft = isTopLeft;
