@@ -65,6 +65,8 @@ namespace ArcanepadExample
 
         void createPlayer(ArcanePad pad)
         {
+            if (string.IsNullOrEmpty(pad.IframeId)) return;
+
             GameObject newPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
             APlayerController playerComponent = newPlayer.GetComponent<APlayerController>();
             playerComponent.Initialize(pad);
