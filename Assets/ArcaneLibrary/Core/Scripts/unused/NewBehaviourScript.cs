@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NativeWebSocket;
 
-public class NewBehaviourScript : MonoBehaviour
+public class A_OldTest : MonoBehaviour
 {
     WebSocket websocket;
 
     async void Start()
     {
-        websocket = new WebSocket("ws://localhost:3009");
+        websocket = new WebSocket("ws://localhost:3689");
 
         websocket.OnOpen += () =>
         {

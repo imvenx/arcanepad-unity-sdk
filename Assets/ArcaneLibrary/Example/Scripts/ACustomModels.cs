@@ -12,6 +12,15 @@ namespace ArcanepadExample
         }
     }
 
+    public class TakeDamage : ArcaneBaseEvent
+    {
+        public int damage;
+        public TakeDamage(int damage) : base("TakeDamage")
+        {
+            this.damage = damage;
+        }
+    }
+
     public class CustomEventNames
     {
         public static string Attack = "Attack";

@@ -98,8 +98,8 @@ public class ArcaneInitParams
     public bool hideMouse;
     public ArcaneInitParams(
         string deviceType = "view",
-        string port = "3005",
-        string reverseProxyPort = "3009",
+        string port = "3685",
+        string reverseProxyPort = "3689",
         AOrientation padOrientation = AOrientation.Landscape,
         bool hideMouse = true
     )

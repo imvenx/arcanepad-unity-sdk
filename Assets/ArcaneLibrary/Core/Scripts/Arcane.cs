@@ -19,16 +19,16 @@ public class Arcane : MonoBehaviour
     public static List<string> IframeViewsIds = new List<string>();
     public static List<string> IframePadsIds = new List<string>();
     public static ArcanePad Pad { get; private set; }
-    public string LibraryVersion { get; } = "1.4.2";
+    public string LibraryVersion { get; } = "1.5.0";
     [DllImport("__Internal")]
     private static extern void SetFullScreen();
 
     [SerializeField]
     private static ArcaneDeviceTypeEnum DeviceType;
-    [SerializeField]
-    private static string Port = "3005";
-    [SerializeField]
-    private static string ReverseProxyPort = "3009";
+    // [SerializeField]
+    // private static string Port = "3685";
+    // [SerializeField]
+    // private static string ReverseProxyPort = "3689";
 
     private static ArcaneInitParams _arcaneInitParams;
     // [SerializeField]

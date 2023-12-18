@@ -1,20 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using ArcanepadSDK.Types;
-using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ArcanepadExample
 {
     public class APadManager : MonoBehaviour
     {
+        public Button AttackButton;
+        public Button CalibrateQuaternionButton;
+
         async void Awake()
         {
-            Arcane.Init(new ArcaneInitParams(deviceType: ArcaneDeviceType.pad));
+            Arcane.Init(new ArcaneInitParams(deviceType: ArcaneDeviceType.pad, padOrientation: AOrientation.Portrait));
 
             await Arcane.ArcaneClientInitialized();
 
-            Arcane.Pad.Vibrate(500);
+            Arcane.Msg.On("TakeDamage", (TakeDamage e) => Arcane.Pad.Vibrate(100 * e.damage));
+
+            AttackButton.onClick.AddListener(Attack);
+
+            CalibrateQuaternionButton.onClick.AddListener(() => Arcane.Pad.CalibrateQuaternion());
+        }
+
+        void Attack()
+        {
+            Arcane.Msg.EmitToViews(new AttackEvent(5));
         }
     }
 }
