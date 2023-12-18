@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ArcanepadExample
 {
-    public class APlayerController : MonoBehaviour
+    public class A_Example_PlayerController : MonoBehaviour
     {
         public ArcanePad Pad { get; private set; }
         public void Initialize(ArcanePad pad)

@@ -12,7 +12,7 @@ namespace ArcanepadExample
     public class AViewManager : MonoBehaviour
     {
         public GameObject playerPrefab;
-        public List<APlayerController> players = new List<APlayerController>();
+        public List<A_Example_PlayerController> players = new List<A_Example_PlayerController>();
         public bool gameStarted { get; private set; }
         public static bool isGamePaused = false;
         public TextMeshProUGUI deviceTypeText;
@@ -68,13 +68,13 @@ namespace ArcanepadExample
             if (string.IsNullOrEmpty(pad.IframeId)) return;
 
             GameObject newPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-            APlayerController playerComponent = newPlayer.GetComponent<APlayerController>();
+            A_Example_PlayerController playerComponent = newPlayer.GetComponent<A_Example_PlayerController>();
             playerComponent.Initialize(pad);
 
             players.Add(playerComponent);
         }
 
-        void destroyPlayer(APlayerController playerComponent)
+        void destroyPlayer(A_Example_PlayerController playerComponent)
         {
             playerComponent.Pad.Dispose();
             players.Remove(playerComponent);

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace ArcanepadExample
 {
-    public class APadManager : MonoBehaviour
+    public class A_Example_PadManager : MonoBehaviour
     {
         public Button AttackButton;
         public Button CalibrateQuaternionButton;
