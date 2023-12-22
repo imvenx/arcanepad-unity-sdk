@@ -70,7 +70,7 @@ public class AWebSocketService<CustomEventNameType>
 
     private void InitAsExternalClient()
     {
-        Debug.Log("Initializing Unity Client as External");
+        Debug.Log("Initializing Unity Client as External...");
 
         // if (string.IsNullOrEmpty(arcaneInitParams.arcaneCode))
         // {
@@ -95,7 +95,7 @@ public class AWebSocketService<CustomEventNameType>
 
     private void InitAsIframeClent()
     {
-        Debug.Log("Initializing Unity Client as Iframe");
+        Debug.Log("Initializing Unity Client as Iframe...");
 
         var isWebEnv = Application.platform == RuntimePlatform.WebGLPlayer;
 
