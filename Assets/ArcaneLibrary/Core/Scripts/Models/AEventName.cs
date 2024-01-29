@@ -19,6 +19,8 @@ namespace ArcanepadSDK.Models
 
         public static string EnterApp = "_EnterApp";
         public static string ExitApp = "_ExitApp";
+        public static string PauseApp = "_PauseApp";
+        public static string ResumeApp = "_ResumeApp";
 
         public static string RefreshGlobalState = "_RefreshGlobalState";
 
@@ -39,6 +41,10 @@ namespace ArcanepadSDK.Models
         public static string StopGetRotationEuler = "_StopGetRotationEuler";
         public static string GetRotationEuler = "_GetRotationEuler";
         public static string CalibrateRotationEuler = "_CalibrateRotationEuler";
+
+        public static string StartGetLinearAcceleration = "_StartGetLinearAcceleration";
+        public static string StopGetLinearAcceleration = "_StopGetLinearAcceleration";
+        public static string GetLinearAcceleration = "_GetLinearAcceleration";
 
         public static string StartGetPointer = "_StartGetPointer";
         public static string StopGetPointer = "_StopGetPointer";

@@ -80,6 +80,10 @@ namespace ArcanepadSDK.Models
     public class OpenArcaneMenuEvent : ArcaneBaseEvent { public OpenArcaneMenuEvent() : base(AEventName.OpenArcaneMenu) { } }
     public class CloseArcaneMenuEvent : ArcaneBaseEvent { public CloseArcaneMenuEvent() : base(AEventName.CloseArcaneMenu) { } }
 
+    public class PauseAppEvent : ArcaneBaseEvent { public PauseAppEvent() : base(AEventName.PauseApp) { } }
+    public class ResumeAppEvent : ArcaneBaseEvent { public ResumeAppEvent() : base(AEventName.ResumeApp) { } }
+
+
     public class ClientDisconnectEvent : ArcaneBaseEvent
     {
         public string clientId;
@@ -154,6 +158,23 @@ namespace ArcanepadSDK.Models
             this.z = z;
         }
     }
+
+
+    public class StartGetLinearAccelerationEvent : ArcaneBaseEvent { public StartGetLinearAccelerationEvent() : base(AEventName.StartGetLinearAcceleration) { } }
+    public class StopGetLinearAccelerationEvent : ArcaneBaseEvent { public StopGetLinearAccelerationEvent() : base(AEventName.StopGetLinearAcceleration) { } }
+    public class GetLinearAccelerationEvent : ArcaneBaseEvent
+    {
+        public float x;
+        public float y;
+        public float z;
+        public GetLinearAccelerationEvent(float x, float y, float z) : base(AEventName.GetLinearAcceleration)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
 
     public class StartGetPointerEvent : ArcaneBaseEvent { public StartGetPointerEvent() : base(AEventName.StartGetPointer) { } }
     public class StopGetPointerEvent : ArcaneBaseEvent { public StopGetPointerEvent() : base(AEventName.StopGetPointer) { } }

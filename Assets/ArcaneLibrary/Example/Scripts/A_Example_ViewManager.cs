@@ -34,12 +34,14 @@ namespace ArcanepadExample
                 createPlayer(pad);
             });
 
-            Arcane.Msg.On(AEventName.OpenArcaneMenu, () =>
+            Arcane.Msg.On(AEventName.PauseApp, () =>
             {
+                Debug.Log("pause");
                 isGamePaused = true;
             });
-            Arcane.Msg.On(AEventName.CloseArcaneMenu, () =>
+            Arcane.Msg.On(AEventName.ResumeApp, () =>
             {
+                Debug.Log("resume");
                 isGamePaused = false;
             });
 

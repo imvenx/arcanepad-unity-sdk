@@ -1,5 +1,6 @@
 using ArcanepadSDK;
 using ArcanepadSDK.Models;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace ArcanepadExample
@@ -35,6 +36,13 @@ namespace ArcanepadExample
             {
                 if (AViewManager.isGamePaused) return;
                 transform.rotation = new Quaternion(e.x, e.y, e.z, e.w);
+            });
+
+            Pad.StartGetLinearAcceleration();
+            Pad.OnGetLinearAcceleration((GetLinearAccelerationEvent e) =>
+            {
+                if (AViewManager.isGamePaused) return;
+                Debug.Log("Linear Acceleration: " + JsonConvert.SerializeObject(e));
             });
 
             // Pad.StartGetPointer();

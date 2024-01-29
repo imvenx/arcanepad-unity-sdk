@@ -39,6 +39,11 @@ namespace ArcanepadSDK
                 ProxyEvent(AEventName.GetRotationEuler, e, clientId);
             });
 
+            Msg.On(AEventName.GetLinearAcceleration, (GetLinearAccelerationEvent e, string clientId) =>
+            {
+                ProxyEvent(AEventName.GetLinearAcceleration, e, clientId);
+            });
+
             Msg.On(AEventName.GetPointer, (GetPointerEvent e, string clientId) =>
             {
                 ProxyEvent(AEventName.GetPointer, e, clientId);
@@ -64,6 +69,16 @@ namespace ArcanepadSDK
             Msg.On(AEventName.CloseArcaneMenu, (CloseArcaneMenuEvent e, string fromId) =>
             {
                 ProxyEvent(AEventName.CloseArcaneMenu, e, fromId);
+            });
+
+            Msg.On(AEventName.PauseApp, (PauseAppEvent e, string fromId) =>
+            {
+                ProxyEvent(AEventName.PauseApp, e, fromId);
+            });
+
+            Msg.On(AEventName.ResumeApp, (ResumeAppEvent e, string fromId) =>
+            {
+                ProxyEvent(AEventName.ResumeApp, e, fromId);
             });
         }
 
@@ -93,6 +108,8 @@ namespace ArcanepadSDK
         {
             Msg.Emit(new CalibrateQuaternionEvent(), InternalIdList);
         }
+
+
         public void StartGetRotationEuler()
         {
             Msg.Emit(new StartGetRotationEulerEvent(), InternalIdList);
@@ -108,6 +125,24 @@ namespace ArcanepadSDK
         {
             Events.On($"{AEventName.GetRotationEuler}_{InternalId}", callback);
         }
+
+
+        public void StartGetLinearAcceleration()
+        {
+            Msg.Emit(new StartGetLinearAccelerationEvent(), InternalIdList);
+        }
+
+        public void StopGetLinearAcceleration(bool offAllListeners = false)
+        {
+            Msg.Emit(new StopGetLinearAccelerationEvent(), InternalIdList);
+            if (offAllListeners) Events.Off($"{AEventName.GetLinearAcceleration}_{InternalId}");
+        }
+
+        public void OnGetLinearAcceleration(Action<GetLinearAccelerationEvent> callback)
+        {
+            Events.On($"{AEventName.GetLinearAcceleration}_{InternalId}", callback);
+        }
+
 
         public void StartGetPointer()
         {
@@ -156,6 +191,16 @@ namespace ArcanepadSDK
         public void OnCloseArcaneMenu(Action<CloseArcaneMenuEvent> callback)
         {
             Events.On($"{AEventName.CloseArcaneMenu}_{IframeId}", callback);
+        }
+
+        public void OnPauseApp(Action<PauseAppEvent> callback)
+        {
+            Events.On($"{AEventName.PauseApp}_{IframeId}", callback);
+        }
+
+        public void OnResumeApp(Action<ResumeAppEvent> callback)
+        {
+            Events.On($"{AEventName.ResumeApp}_{IframeId}", callback);
         }
 
         public void Emit(ArcaneBaseEvent e)
